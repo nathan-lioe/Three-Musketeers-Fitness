@@ -2,8 +2,8 @@
 
 ## Our Team
 
-TODO: Replace with your team members
-Ariel Antunez 5441904
+Ariel Antunez 5441904\n
+Nathan Lioe-A-Tjam 6361029\n
 
 ## How to run the streamlit app
 
