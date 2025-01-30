@@ -3,6 +3,7 @@
 ## Our Team
 
 TODO: Replace with your team members
+Ariel Antunez 5441904
 
 ## How to run the streamlit app
 
