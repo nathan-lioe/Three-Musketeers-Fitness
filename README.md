@@ -2,8 +2,8 @@
 
 ## Our Team
 
-Ariel Antunez 5441904\n
-Nathan Lioe-A-Tjam 6361029\n
+Ariel Antunez 5441904<br>
+Nathan Lioe-A-Tjam 6361029<br>
 
 ## How to run the streamlit app
 
