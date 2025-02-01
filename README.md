@@ -4,6 +4,7 @@
 
 Ariel Antunez 5441904<br>
 Nathan Lioe-A-Tjam 6361029<br>
+Hafza Nasim<br>
 
 ## How to run the streamlit app
 
