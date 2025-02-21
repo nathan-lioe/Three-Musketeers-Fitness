@@ -24,3 +24,7 @@ def display_app_page():
 # This is the starting point for your app. You do not need to change these lines
 if __name__ == '__main__':
     display_app_page()
+
+ # Fetching and displaying recent workouts
+    workouts = get_user_workouts(userId)
+    display_recent_workouts(workouts)
