@@ -40,7 +40,42 @@ def display_activity_summary(workouts_list):
 
 
 def display_recent_workouts(workouts_list):
-    """Write a good docstring here."""
+    def display_recent_workouts(workouts):
+    """
+    Displays a user's recent workouts.
+
+    Args:
+        workouts (list): A list of workout dictionaries. 
+                         Each dictionary contains:
+                         - 'start_time': str
+                         - 'end_time': str
+                         - 'distance': float
+                         - 'steps': int
+                         - 'calories': float
+                         - 'start_coords': tuple(float, float)
+                         - 'end_coords': tuple(float, float)
+
+    Returns:
+        None (Prints the formatted workout data)
+    """
+    if not workouts:
+        print("No recent workouts available.")
+        return
+
+    print("\nRecent Workouts:")
+    print("=" * 30)
+    
+    for i, workout in enumerate(workouts, 1):
+        print(f"Workout {i}:")
+        print(f"  Start Time: {workout['start_time']}")
+        print(f"  End Time: {workout['end_time']}")
+        print(f"  Distance: {workout['distance']} km")
+        print(f"  Steps: {workout['steps']}")
+        print(f"  Calories Burned: {workout['calories']}")
+        print(f"  Start Coordinates: {workout['start_coords']}")
+        print(f"  End Coordinates: {workout['end_coords']}")
+        print("-" * 30)
+
     pass
 
 
