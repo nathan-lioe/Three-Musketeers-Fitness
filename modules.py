@@ -40,7 +40,31 @@ def display_activity_summary(workouts_list):
 
 
 def display_recent_workouts(workouts_list):
-    """Write a good docstring here."""
+   import streamlit as st
+
+def display_recent_workouts(workouts_list):
+    """
+    Displays a user's recent workouts in a Streamlit app.
+
+    Args:
+        workouts_list (list): A list of workout dictionaries from `get_user_workouts()`.
+    """
+    if not workouts_list:
+        st.write("No recent workouts available.")
+        return
+
+    st.subheader("Recent Workouts")
+
+    for i, workout in enumerate(workouts_list, 1):
+        with st.expander(f"Workout {i} - {workout['start_timestamp']}"):
+            st.write(f"**Start Time:** {workout['start_timestamp']}")
+            st.write(f"**End Time:** {workout['end_timestamp']}")
+            st.write(f"**Distance:** {workout['distance']} km")
+            st.write(f"**Steps:** {workout['steps']}")
+            st.write(f"**Calories Burned:** {workout['calories_burned']}")
+            st.write(f"**Start Coordinates:** {workout['start_lat_lng']}")
+            st.write(f"**End Coordinates:** {workout['end_lat_lng']}")
+
     pass
 
 
