@@ -8,6 +8,7 @@
 #############################################################################
 
 from internals import create_component
+import streamlit as st
 
 
 # This one has been written for you as an example. You may change it as wanted.
@@ -40,9 +41,7 @@ def display_activity_summary(workouts_list):
 
 
 def display_recent_workouts(workouts_list):
-   import streamlit as st
-
-def display_recent_workouts(workouts_list):
+   
     """
     Displays a user's recent workouts in a Streamlit app.
 
