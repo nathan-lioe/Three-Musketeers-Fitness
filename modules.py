@@ -10,6 +10,7 @@
 from internals import create_component
 
 
+
 # This one has been written for you as an example. You may change it as wanted.
 def display_my_custom_component(value):
     """Displays a 'my custom component' which showcases an example of how custom
@@ -36,7 +37,60 @@ def display_post(username, user_image, timestamp, content, post_image):
 
 def display_activity_summary(workouts_list):
     """Write a good docstring here."""
-    pass
+
+    num_workouts = len(workouts_list)
+    total_distance = 0
+    total_steps = 0
+    total_minutes = 0 
+    total_calories = 0
+
+    time = []
+    steps = []
+    date = []
+    calories = []
+    distance = []
+    for x in workouts_list:
+        # Get distance
+        x_distance = x[0].get("distance")
+        total_distance += x[0].get("distance")
+        distance.append(x_distance)
+
+        # Get total time worked out
+        start_time = x[0].get("start_timestamp")
+        end_time = x[0].get("end_timestamp")
+        date.append(end_time[5:10])
+
+        start_h, start_m = int(start_time[11:13]), int(start_time[14:16])
+        end_h, end_m = int(end_time[11:13]), int(end_time[14:16])
+        start_minutes = start_h * 60 + start_m
+        end_minutes = end_h * 60 + end_m
+        diff_minutes = end_minutes - start_minutes 
+        total_minutes += diff_minutes
+        time.append(diff_minutes)
+
+        # Get calories burned
+        x_calories = x[0].get("calories_burned")
+        total_calories += x_calories 
+        calories.append(x_calories)
+        # Get steps 
+        x_steps = x[0].get("steps")
+        total_steps += x_steps
+        steps.append(x_steps)
+    
+    data = {
+        'TOTAL_DISTANCE' : total_distance,
+        'TOTAL_MINUTES' : total_minutes,
+        'TOTAL_CALORIES': total_calories,
+        'TOTAL_STEPS' : total_steps,
+        'TOTAL_WORKOUTS': num_workouts,
+        'TOTAL_TIME': total_minutes
+    }
+
+    html_file_name = "display_summary"
+    create_component(data, html_file_name,height=250)
+    return date,steps, calories,distance,time
+
+
 
 
 def display_recent_workouts(workouts_list):

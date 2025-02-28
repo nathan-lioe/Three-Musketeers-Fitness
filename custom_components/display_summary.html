@@ -1,0 +1,70 @@
+<!-- CSS -->
+<style>
+     .summary {
+            font-family: Arial, sans-serif;
+        }
+    .metrics-row {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+    .row-two {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 15px; 
+    }
+    .metrics-card {
+        flex: 1;
+        min-width: 150px;
+        padding: 20px;
+        background-color: #D3D3D3;
+        border-radius: 10px;
+        text-align: center;
+    }
+    .two-card {
+        flex: 1;
+        min-width: 150px;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        border-radius: 10px;
+        background-color: #D3D3D3;
+        padding:15px
+    }
+
+</style>
+
+<!-- HTML -->
+<div class="summary">
+    <div class="metrics-row">
+        <div class="metrics-card">
+            <div class="metric-title">Total Calories Burned</div>
+            <div class="metric-value">{{TOTAL_CALORIES}}</div>
+        </div>
+        <div class="metrics-card">
+            <div class="metric-title">Total Steps</div>
+            <div class="metric-value">{{TOTAL_STEPS}}</div>
+        </div>
+        <div class="metrics-card">
+            <div class="metric-title">Total Distance</div>
+            <div class="metric-value">{{TOTAL_DISTANCE}} km</div>
+        </div>
+    </div>
+    <div class="row-two">
+        <div class="two-card">
+            <div class="metric-title">Total workouts</div>
+            <div class="metric-value">{{TOTAL_WORKOUTS}}</div>
+        </div>
+        <div class="two-card">
+            <div class="metric-title">Total Time</div>
+            <div class="metric-value">{{TOTAL_TIME}} minutes </div>
+        </div>
+        
+    </div>
+</div>
+</div>
+
