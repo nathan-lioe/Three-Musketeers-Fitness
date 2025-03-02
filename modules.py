@@ -100,4 +100,7 @@ def display_recent_workouts(workouts_list):
 
 def display_genai_advice(timestamp, content, image):
     """Write a good docstring here."""
-    pass
+    st.write(timestamp)
+    st.write(content)
+    st.write(image)
+
