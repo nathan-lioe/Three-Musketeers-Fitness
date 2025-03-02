@@ -31,7 +31,16 @@ def display_my_custom_component(value):
 
 def display_post(username, user_image, timestamp, content, post_image):
     """Write a good docstring here."""
-    pass
+    data ={
+        'username' : username,
+        'user_image' : user_image,
+        'timestamp' : timestamp,
+        'content' : content,
+        'post_image' : post_image
+    }
+
+    html_file_name = "post"
+    create_component(data, html_file_name, 600)
 
 
 def display_activity_summary(workouts_list):
@@ -46,4 +55,10 @@ def display_recent_workouts(workouts_list):
 
 def display_genai_advice(timestamp, content, image):
     """Write a good docstring here."""
-    pass
+    data = {
+        'timestamp' : timestamp,
+        'content' : content,
+        'post_image' : image
+    }
+    html_file_name = "gen_ai_display"
+    create_component(data, html_file_name, 600)

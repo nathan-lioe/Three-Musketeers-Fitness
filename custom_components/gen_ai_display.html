@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>User Post</title>
+  <style>
+    .post-container {
+      border: 1px solid #dfdfdf;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+    }
+    .post-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .timestamp {
+      margin-left: auto;
+      font-size: 0.8em;
+      color: #777;
+    }
+    .post-content {
+      margin-top: 10px;
+    }
+    .post-image {
+      margin-top: 10px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="post-container">
+    <div class="post-header">
+      <div class="timestamp">{{timestamp}}</div>
+    </div>
+    <div class="post-content">
+      <p>{{content}}</p>
+      <!-- Only display post image if one is provided -->
+      <img class="post-image" src="{{post_image}}" alt="Post image">
+    </div>
+  </div>
+</body>
+</html>
