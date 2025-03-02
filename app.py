@@ -20,11 +20,6 @@ def display_app_page():
     value = st.text_input('Enter your name')
     display_my_custom_component(value)
 
-    #display_post("roary", "https://i.etsystatic.com/36027281/r/il/79ac34/4640299648/il_fullxfull.4640299648_4gpb.jpg", "01/01/1900", "This is a post test", "https://th.bing.com/th/id/R.d630686c6fe5439d5a72dba5754eb243?rik=dNnYGn%2bmFJQS4w&pid=ImgRaw&r=0")
-
-    advice = get_genai_advice(1)
-
-    display_genai_advice(advice.get('timestamp'), advice.get('content'), advice.get('image'))
 
 
 # This is the starting point for your app. You do not need to change these lines
