@@ -9,6 +9,10 @@ from modules import display_my_custom_component, display_post, display_genai_adv
 from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get_user_sensor_data, get_user_workouts
 import pandas as pd
 import numpy as np
+# For langchain
+from langchain_google_genai import ChatGoogleGenerativeAI
+from dotenv import load_dotenv
+import os
 
 userId = 'user1'
 
@@ -47,6 +51,17 @@ def display_summary_page():
         }
     )
     st.bar_chart(chart_data, x="Day", y="Steps")
+
+    load_dotenv()
+    os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite")
+
+    input = st.text_input("Any questions?")
+    response = llm.invoke(input)
+    st.write("Gemini's response:")
+    st.write(response.content)
+
+
    
 
     
