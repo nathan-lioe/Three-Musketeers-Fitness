@@ -38,48 +38,73 @@ class TestDisplayGenAiAdvice(unittest.TestCase):
 
 class TestDisplayRecentWorkouts(unittest.TestCase):
     """Tests the display_recent_workouts function."""
-    
+
     def test_display_recent_workouts_with_data(self):
-        # Create a simple test script for AppTest
-        test_script = "app.py"  # This should point to your app file
+        # Define a minimal test script function instead of a file path
+        def test_script():
+            workouts = [
+                {
+                    'start_time': '2023-01-01 10:00:00',
+                    'end_time': '2023-01-01 11:00:00',
+                    'distance': 5.2,
+                    'steps': 6500,
+                    'calories': 450,
+                    'start_coords': '40.7128,-74.0060',
+                    'end_coords': '40.7135,-74.0070'
+                },
+                {
+                    'start_time': '2023-01-02 15:30:00',
+                    'end_time': '2023-01-02 16:15:00',
+                    'distance': 3.8,
+                    'steps': 4800,
+                    'calories': 320,
+                    'start_coords': '40.7140,-74.0065',
+                    'end_coords': '40.7150,-74.0075'
+                }
+            ]
+            display_recent_workouts(workouts)
         
-        # Create a Streamlit test app with script path
-        app_test = AppTest(test_script)
+        # Create AppTest with the function and required parameters
+        app_test = AppTest(test_script, default_timeout=10)
+        app_test.run()
         
-        # Sample workout data
-        workouts = [
-            {
-                'start_time': '2023-01-01 10:00:00',
-                'end_time': '2023-01-01 11:00:00',
-                'distance': 5.2,
-                'steps': 6500,
-                'calories': 450,
-                'start_coords': '40.7128,-74.0060',
-                'end_coords': '40.7135,-74.0070'
-            },
-            {
-                'start_time': '2023-01-02 15:30:00',
-                'end_time': '2023-01-02 16:15:00',
-                'distance': 3.8,
-                'steps': 4800,
-                'calories': 320,
-                'start_coords': '40.7140,-74.0065',
-                'end_coords': '40.7150,-74.0075'
-            }
-        ]
+        # Check that subheader exists with correct text
+        subheaders = app_test.get("subheader")
+        self.assertEqual(len(subheaders), 1)
+        self.assertEqual(subheaders[0].value, "Recent Workouts")
         
-        # Call the function directly
-        display_recent_workouts(workouts)
+        # Check that expanders exist
+        expanders = app_test.get("expander")
+        self.assertEqual(len(expanders), 2)
         
-        # Verify the function doesn't raise exceptions
-        self.assertTrue(True)
+        # Check texts within the app for workout details
+        markdowns = app_test.get("markdown")
+        markdown_texts = [md.value for md in markdowns]
+        
+        # Check first workout details
+        self.assertTrue(any("**Start Time:** 2023-01-01 10:00:00" in text for text in markdown_texts))
+        self.assertTrue(any("**End Time:** 2023-01-01 11:00:00" in text for text in markdown_texts))
+        self.assertTrue(any("**Distance:** 5.2 km" in text for text in markdown_texts))
+        self.assertTrue(any("**Steps:** 6500" in text for text in markdown_texts))
+        self.assertTrue(any("**Calories Burned:** 450" in text for text in markdown_texts))
 
     def test_display_recent_workouts_empty_list(self):
-        # Call the function with empty list
-        display_recent_workouts([])
+        # Define a minimal test script function for empty list
+        def test_script():
+            display_recent_workouts([])
         
-        # Verify the function doesn't raise exceptions
-        self.assertTrue(True)
+        # Create AppTest with the function and required parameters
+        app_test = AppTest(test_script, default_timeout=10)
+        app_test.run()
+        
+        # Check for "No recent workouts available" message
+        markdowns = app_test.get("markdown")
+        markdown_texts = [md.value for md in markdowns]
+        self.assertTrue(any("No recent workouts available" in text for text in markdown_texts))
+        
+        # Make sure no subheader is shown
+        subheaders = app_test.get("subheader")
+        self.assertEqual(len(subheaders), 0)
 
 if __name__ == "__main__":
     unittest.main()
