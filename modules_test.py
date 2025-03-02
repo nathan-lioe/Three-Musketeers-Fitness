@@ -39,13 +39,6 @@ class TestDisplayGenAiAdvice(unittest.TestCase):
 class TestDisplayRecentWorkouts(unittest.TestCase):
     """Tests the display_recent_workouts function."""
 
-  import unittest
-from streamlit.testing.v1 import AppTest
-from modules import display_recent_workouts
-
-class TestDisplayRecentWorkouts(unittest.TestCase):
-    """Tests the display_recent_workouts function using AppTest."""
-
     def setUp(self):
         """Initialize AppTest before each test with required parameters."""
         self.app = AppTest(display_recent_workouts, default_timeout=10)
