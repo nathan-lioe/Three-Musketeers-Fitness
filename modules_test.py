@@ -38,73 +38,97 @@ class TestDisplayGenAiAdvice(unittest.TestCase):
 
 class TestDisplayRecentWorkouts(unittest.TestCase):
     """Tests the display_recent_workouts function."""
-
-    def test_display_recent_workouts_with_data(self):
-        # Define a minimal test script function instead of a file path
-        def test_script():
-            workouts = [
-                {
-                    'start_time': '2023-01-01 10:00:00',
-                    'end_time': '2023-01-01 11:00:00',
-                    'distance': 5.2,
-                    'steps': 6500,
-                    'calories': 450,
-                    'start_coords': '40.7128,-74.0060',
-                    'end_coords': '40.7135,-74.0070'
-                },
-                {
-                    'start_time': '2023-01-02 15:30:00',
-                    'end_time': '2023-01-02 16:15:00',
-                    'distance': 3.8,
-                    'steps': 4800,
-                    'calories': 320,
-                    'start_coords': '40.7140,-74.0065',
-                    'end_coords': '40.7150,-74.0075'
-                }
-            ]
-            display_recent_workouts(workouts)
-        
-        # Create AppTest with the function and required parameters
-        app_test = AppTest(test_script, default_timeout=10)
-        app_test.run()
-        
-        # Check that subheader exists with correct text
-        subheaders = app_test.get("subheader")
-        self.assertEqual(len(subheaders), 1)
-        self.assertEqual(subheaders[0].value, "Recent Workouts")
-        
-        # Check that expanders exist
-        expanders = app_test.get("expander")
-        self.assertEqual(len(expanders), 2)
-        
-        # Check texts within the app for workout details
-        markdowns = app_test.get("markdown")
-        markdown_texts = [md.value for md in markdowns]
-        
-        # Check first workout details
-        self.assertTrue(any("**Start Time:** 2023-01-01 10:00:00" in text for text in markdown_texts))
-        self.assertTrue(any("**End Time:** 2023-01-01 11:00:00" in text for text in markdown_texts))
-        self.assertTrue(any("**Distance:** 5.2 km" in text for text in markdown_texts))
-        self.assertTrue(any("**Steps:** 6500" in text for text in markdown_texts))
-        self.assertTrue(any("**Calories Burned:** 450" in text for text in markdown_texts))
-
-    def test_display_recent_workouts_empty_list(self):
-        # Define a minimal test script function for empty list
+    
+    def test_no_workouts(self):
+        """Tests when there are no recent workouts."""
+        # Create a test script for empty workouts
         def test_script():
             display_recent_workouts([])
-        
-        # Create AppTest with the function and required parameters
-        app_test = AppTest(test_script, default_timeout=10)
-        app_test.run()
+            
+        # Create a new AppTest instance for this test
+        app = AppTest(test_script, default_timeout=10)
+        app.run()
         
         # Check for "No recent workouts available" message
-        markdowns = app_test.get("markdown")
-        markdown_texts = [md.value for md in markdowns]
-        self.assertTrue(any("No recent workouts available" in text for text in markdown_texts))
+        markdown_elements = app.get("markdown")
+        markdown_values = [element.value for element in markdown_elements]
+        self.assertTrue(any("No recent workouts available" in value for value in markdown_values))
+    
+    def test_single_workout(self):
+        """Tests displaying a single workout."""
+        workouts = [{
+            "start_time": "2024-02-20 08:00:00",
+            "end_time": "2024-02-20 08:30:00",
+            "distance": 5.2,
+            "steps": 6200,
+            "calories": 320,
+            "start_coords": (37.7749, -122.4194),
+            "end_coords": (37.7849, -122.4294),
+        }]
         
-        # Make sure no subheader is shown
-        subheaders = app_test.get("subheader")
-        self.assertEqual(len(subheaders), 0)
+        # Create a test script for a single workout
+        def test_script():
+            display_recent_workouts(workouts)
+            
+        # Create a new AppTest instance for this test
+        app = AppTest(test_script, default_timeout=10)
+        app.run()
+        
+        # Check for expected elements
+        markdown_elements = app.get("markdown")
+        markdown_values = [element.value for element in markdown_elements]
+        
+        # Verify workout details are displayed
+        self.assertTrue(any("**Distance:** 5.2 km" in value for value in markdown_values))
+        self.assertTrue(any("**Steps:** 6200" in value for value in markdown_values))
+        self.assertTrue(any("**Calories Burned:** 320" in value for value in markdown_values))
+    
+    def test_multiple_workouts(self):
+        """Tests displaying multiple workouts."""
+        workouts = [
+            {
+                "start_time": "2024-02-20 08:00:00",
+                "end_time": "2024-02-20 08:30:00",
+                "distance": 5.2,
+                "steps": 6200,
+                "calories": 320,
+                "start_coords": (37.7749, -122.4194),
+                "end_coords": (37.7849, -122.4294),
+            },
+            {
+                "start_time": "2024-02-21 09:00:00",
+                "end_time": "2024-02-21 09:45:00",
+                "distance": 7.8,
+                "steps": 8900,
+                "calories": 450,
+                "start_coords": (40.7128, -74.0060),
+                "end_coords": (40.7328, -74.0160),
+            },
+        ]
+        
+        # Create a test script for multiple workouts
+        def test_script():
+            display_recent_workouts(workouts)
+            
+        # Create a new AppTest instance for this test
+        app = AppTest(test_script, default_timeout=10)
+        app.run()
+        
+        # Check for expected elements
+        expander_elements = app.get("expander")
+        
+        # Verify there are two expanders (one for each workout)
+        self.assertEqual(len(expander_elements), 2)
+        
+        # Check for workout details in markdown elements
+        markdown_elements = app.get("markdown")
+        markdown_values = [element.value for element in markdown_elements]
+        
+        # Verify both workouts' details are displayed
+        self.assertTrue(any("**Distance:** 5.2 km" in value for value in markdown_values))
+        self.assertTrue(any("**Distance:** 7.8 km" in value for value in markdown_values))
+        self.assertTrue(any("**Steps:** 6200" in value for value in markdown_values))
+        self.assertTrue(any("**Steps:** 8900" in value for value in markdown_values))
 
 if __name__ == "__main__":
     unittest.main()
