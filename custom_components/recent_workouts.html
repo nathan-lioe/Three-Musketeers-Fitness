@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recent Workouts</title>
+  <style>
+    .workout-container {
+      border: 1px solid #dfdfdf;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+    }
+    .workout-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .workout-date {
+      margin-left: auto;
+      font-size: 0.8em;
+      color: #777;
+    }
+    .workout-content {
+      margin-top: 10px;
+    }
+    .workout-details {
+      margin-top: 10px;
+    }
+    .workout-title {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    .workout-type {
+      font-style: italic;
+      color: #555;
+    }
+    .workout-location {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+    <div class="workout-container">
+      <div class="workout-header">
+        <div class="workout-date">{{workout.date}}</div>
+      </div>
+      <div class="workout-content">
+        <div class="workout-title">{{workout.name}}</div>
+        <div class="workout-type">{{workout.type}}</div>
+        <div class="workout-details">
+          <p>Duration:  Start: {{START_TIME}}, End: {{END_TIME}}</p>
+          <p>Steps: {{STEPS}} steps</p>
+          <p>Calories Burned: {{CALORIES_BURNED}} kcal</p>
+          <p>Distance: {{DISTANCE}} km</p>
+        </div>
+        <div class="workout-location">
+          <p>Location: Start: {{START_LAT_LNG}}, End: {{END_LAT_LNG}}</p>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

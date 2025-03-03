@@ -104,7 +104,21 @@ def display_activity_summary(workouts_list):
 
 def display_recent_workouts(workouts_list):
     """Write a good docstring here."""
-    pass
+    recent_workouts = []
+    for workout in workouts_list:
+        workout_data = {
+            'WORKOUT_ID': workout.get('workout_id'),
+            'START_TIME': workout.get('start_timestamp'),
+            'END_TIME': workout.get('end_timestamp'),
+            'START_LAT_LNG' : workout.get('start_lat_lng'),
+            'END_LAT_LNG' : workout.get('end_lat_lng'),
+            'DISTANCE': workout.get('distance'),
+            'STEPS': workout.get('steps'),
+            'CALORIES_BURNED': workout.get('calories_burned')
+        }
+
+        html_file_name = "recent_workouts"
+        create_component(workout_data, html_file_name, height=600)
 
 
 def display_genai_advice(timestamp, content, image):
