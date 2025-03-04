@@ -42,10 +42,50 @@ class TestDisplayPost(unittest.TestCase):
 
 class TestDisplayActivitySummary(unittest.TestCase):
     """Tests the display_activity_summary function."""
-
-    def test_foo(self):
-        """Tests foo."""
-        pass
+    
+    @patch("modules.create_component")
+    def test_display_activity_summary(self, mock_create_component):
+        workouts_list = [
+            [
+                {
+                    "distance": 5.2,
+                    "start_timestamp": "2023-06-01T10:30:00",
+                    "end_timestamp": "2023-06-01T11:15:00",
+                    "calories_burned": 350,
+                    "steps": 6500
+                }
+            ],
+            [
+                {
+                    "distance": 3.8,
+                    "start_timestamp": "2023-06-02T08:00:00",
+                    "end_timestamp": "2023-06-02T08:45:00",
+                    "calories_burned": 280,
+                    "steps": 4800
+                }
+            ]
+        ]
+        
+        dates, steps, calories, distance, time = display_activity_summary(workouts_list)
+        
+        expected_data = {
+            'TOTAL_DISTANCE': 9.0,
+            'TOTAL_MINUTES': 90,
+            'TOTAL_CALORIES': 630,
+            'TOTAL_STEPS': 11300,
+            'TOTAL_WORKOUTS': 2,
+            'TOTAL_TIME': 90
+        }
+        
+        # Check that create_component was called with the right arguments
+        mock_create_component.assert_called_once_with(expected_data, "display_summary", height=250)
+        
+        # Check that the returned lists are correct
+        self.assertEqual(dates, ["06-01", "06-02"])
+        self.assertEqual(steps, [6500, 4800])
+        self.assertEqual(calories, [350, 280])
+        self.assertEqual(distance, [5.2, 3.8])
+        self.assertEqual(time, [45, 45])
 
 
 class TestDisplayGenAiAdvice(unittest.TestCase):
