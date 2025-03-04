@@ -101,16 +101,24 @@ def display_activity_summary(workouts_list):
     return date,steps, calories,distance,time
 
 
+def format_date(timestamp_str):
+    """Extracts the date (YYYY-MM-DD) from a timestamp string using slicing."""
+    return timestamp_str[:10] if timestamp_str else "Unknown"
+
+def format_time(timestamp_str):
+    """Extracts the time (HH:MM:SS) from a timestamp string using slicing."""
+    return timestamp_str[11:] if timestamp_str else "Unknown"
 
 
 def display_recent_workouts(workouts_list):
-    """Write a good docstring here."""
-    recent_workouts = []
-    for workout in workouts_list:
+     """Write a good docstring here.""" 
+     recent_workouts = []
+     for workout in workouts_list:
         workout_data = {
             'WORKOUT_ID': workout.get('workout_id'),
-            'START_TIME': workout.get('start_timestamp'),
-            'END_TIME': workout.get('end_timestamp'),
+            'DATE': format_date(workout.get('start_timestamp')), 
+            'START_TIME': format_time(workout.get('start_timestamp')),  
+            'END_TIME': format_time(workout.get('end_timestamp')),
             'START_LAT_LNG' : workout.get('start_lat_lng'),
             'END_LAT_LNG' : workout.get('end_lat_lng'),
             'DISTANCE': workout.get('distance'),

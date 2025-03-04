@@ -14,13 +14,18 @@ userId = 'user1'
 
 def display_app_page():
     """Displays the home page of the app."""
-    st.title('Welcome to SDS!')
+    st.title('Welcome to ISE!')
 
-    # An example of displaying a custom component called "my_custom_component"
-    value = st.text_input('Enter your name')
-    display_my_custom_component(value)
+    # Fetch and display recent workouts
+    recent_workouts = get_user_workouts(userId)
 
-
+    if recent_workouts:
+            st.subheader("🏋️ Recent Workouts")
+            with st.expander("View Recent Workouts"):
+                display_recent_workouts(recent_workouts)
+    else:
+        st.write("🚫 No recent workouts available.")
+        return
 
 # This is the starting point for your app. You do not need to change these lines
 if __name__ == '__main__':

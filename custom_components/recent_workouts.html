@@ -40,24 +40,36 @@
       font-size: 0.9em;
       color: #333;
     }
+    .time-detail {
+      font-size: 0.9em;
+      color: #555;
+      margin-top: 5px;
+    }
+    .location-detail {
+      font-size: 0.9em;
+      color: #555;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
     <div class="workout-container">
       <div class="workout-header">
-        <div class="workout-date">{{workout.date}}</div>
+        <div class="workout-date">📅 {{DATE}}</div>
       </div>
       <div class="workout-content">
-        <div class="workout-title">{{workout.name}}</div>
-        <div class="workout-type">{{workout.type}}</div>
+        <div class="workout-title">🏋️‍♂️ {{WORKOUT_ID}}</div>
         <div class="workout-details">
-          <p>Duration:  Start: {{START_TIME}}, End: {{END_TIME}}</p>
-          <p>Steps: {{STEPS}} steps</p>
-          <p>Calories Burned: {{CALORIES_BURNED}} kcal</p>
-          <p>Distance: {{DISTANCE}} km</p>
-        </div>
+          <p>⏱️ Duration:</p>
+          <div class="time-detail">Start: {{START_TIME}}</div>
+          <div class="time-detail">End: {{END_TIME}}</div>
+          <p>👣 Steps: {{STEPS}} steps</p>
+          <p>🔥 Calories Burned: {{CALORIES_BURNED}} kcal</p>
+          <p>📏 Distance: {{DISTANCE}} km</p>
         <div class="workout-location">
-          <p>Location: Start: {{START_LAT_LNG}}, End: {{END_LAT_LNG}}</p>
+          <p>📍 Location:</p>
+          <div class="location-detail">Start: {{START_LAT_LNG}}</div>
+          <div class="location-detail">End: {{END_LAT_LNG}}</div>
         </div>
       </div>
     </div>
