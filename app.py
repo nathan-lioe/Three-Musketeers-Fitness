@@ -15,7 +15,7 @@ userId = 'user1'
 def display_app_page():
     """Displays the home page of the app."""
     st.title('Welcome to ISE!')
-
+    
     # Fetch and display recent workouts
     recent_workouts = get_user_workouts(userId)
 
