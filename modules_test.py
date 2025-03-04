@@ -50,10 +50,22 @@ class TestDisplayActivitySummary(unittest.TestCase):
 
 class TestDisplayGenAiAdvice(unittest.TestCase):
     """Tests the display_genai_advice function."""
-
-    def test_foo(self):
+    @patch("modules.create_component")
+    def test_display_genai_advice(self, mock_create_component):
         """Tests foo."""
-        pass
+        timestamp = "01-01-1900"
+        content = "This is a test"
+        post_image = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Ludovic_and_Lauren_%288425515069%29.jpg/330px-Ludovic_and_Lauren_%288425515069%29.jpg"
+
+        display_genai_advice(timestamp, content, post_image)
+        
+        expected_data = {
+            'timestamp': timestamp,
+            'content': content,
+            'post_image': post_image
+        }
+
+        mock_create_component.assert_called_once_with(expected_data, "gen_ai_display", 600)
 
 
 class TestDisplayRecentWorkouts(unittest.TestCase):

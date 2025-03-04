@@ -15,7 +15,16 @@ userId = 'user1'
 def display_app_page():
     """Displays the home page of the app."""
     st.title('Welcome to ISE!')
-    
+
+    #display post
+    username = "roary"
+    user_image = "https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg"
+    timestamp = "01-01-1900"
+    content = "This is a test"
+    post_image = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Ludovic_and_Lauren_%288425515069%29.jpg/330px-Ludovic_and_Lauren_%288425515069%29.jpg"
+    display_post(username, user_image, timestamp, content, post_image)
+
+
     # Fetch and display recent workouts
     recent_workouts = get_user_workouts(userId)
 
