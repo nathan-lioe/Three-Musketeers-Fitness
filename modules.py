@@ -41,6 +41,7 @@ def display_post(username, user_image, timestamp, content, post_image):
     }
 
     html_file_name = "post"
+
     create_component(data, html_file_name, 600)
 
 
