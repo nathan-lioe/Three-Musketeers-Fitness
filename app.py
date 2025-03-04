@@ -36,6 +36,10 @@ def display_app_page():
         st.write("🚫 No recent workouts available.")
         return
 
+    advice = get_genai_advice(userId)
+
+    display_genai_advice(advice.get('timestamp'), advice.get('content'), advice.get('image'))
+
 # This is the starting point for your app. You do not need to change these lines
 if __name__ == '__main__':
     display_app_page()
