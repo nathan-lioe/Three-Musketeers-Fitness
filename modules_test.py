@@ -111,9 +111,65 @@ class TestDisplayGenAiAdvice(unittest.TestCase):
 class TestDisplayRecentWorkouts(unittest.TestCase):
     """Tests the display_recent_workouts function."""
 
-    def test_foo(self):
-        """Tests foo."""
-        pass
+    def setUp(self):
+        """Initialize AppTest before each test with required parameters."""
+        self.app = AppTest(display_recent_workouts, default_timeout=10)
+
+    def test_no_workouts(self):
+        """Tests when there are no recent workouts."""
+        result = self.app.run([])
+        self.assertIn("No recent workouts available.", result.output)
+
+    def test_single_workout(self):
+        """Tests displaying a single workout."""
+        workouts = [{
+            "start_time": " 08:00:00",
+            "end_time": "08:30:00",
+            "date": "2024-02-19",
+            "workout_id": "workout0",
+            "distance": 5.2,
+            "steps": 6200,
+            "calories": 320,
+            "start_lat_lng": (37.7749, -122.4194),
+            "end_lat_lng": (37.7849, -122.4294),
+        }]
+        result = self.app.run(workouts)
+        self.assertIn("Workout 1:", result.output)
+        self.assertIn("Distance: 5.2 mi", result.output)
+        self.assertIn("Steps: 6200", result.output)
+        self.assertIn("Calories Burned: 320", result.output)
+
+    def test_multiple_workouts(self):
+        """Tests displaying multiple workouts."""
+        workouts = [
+            {
+                "start_time": " 08:00:00",
+                "end_time": "08:30:00",
+                "date": "2024-02-20",
+                "workout_id": "workout1",
+                "distance": 5.2,
+                "steps": 6200,
+                "calories": 320,
+                "start_lat_lng": (37.7749, -122.4194),
+                "end_lat_lng": (37.7849, -122.4294),
+            },
+            {
+                "start_time": "09:00:00",
+                "end_time": "09:45:00",
+                "date": "2024-02-21",
+                "workout_id": "workout2",
+                "distance": 7.8,
+                "steps": 8900,
+                "calories": 450,
+                "start_lat_lng": (40.7128, -74.0060),
+                "end_lat_lng": (40.7328, -74.0160),
+            },
+        ]
+        result = self.app.run(workouts)
+        self.assertIn("Workout 1:", result.output)
+        self.assertIn("Workout 2:", result.output)
+        self.assertIn("Distance: 5.2 mi", result.output)
+        self.assertIn("Distance: 7.8 mi", result.output)
 
 
 if __name__ == "__main__":
