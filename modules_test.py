@@ -44,7 +44,7 @@ class TestDisplayActivitySummary(unittest.TestCase):
     """Tests the display_activity_summary function."""
     
     @patch("modules.create_component")
-    def test_display_activity_summary(self, mock_create_component):
+    def test_display_activity_summary(self, mock_create_component): 
         workouts_list = [
             [
                 {
@@ -87,6 +87,34 @@ class TestDisplayActivitySummary(unittest.TestCase):
         self.assertEqual(distance, [5.2, 3.8])
         self.assertEqual(time, [45, 45])
 
+    @patch("modules.create_component")
+    def test_display_activity_summary_empty_list(self, mock_create_component):
+        """Tests that display_activity_summary handles an empty workouts list correctly."""
+        # Test with an empty list
+        workouts_list = []
+        
+
+        dates, steps, calories, distance, time = display_activity_summary(workouts_list)
+        
+        expected_data = {
+            'TOTAL_DISTANCE': 0,
+            'TOTAL_MINUTES': 0,
+            'TOTAL_CALORIES': 0,
+            'TOTAL_STEPS': 0,
+            'TOTAL_WORKOUTS': 0,
+            'TOTAL_TIME': 0
+        }
+        
+
+        mock_create_component.assert_called_once_with(expected_data, "display_summary", height=250)
+        
+        # Check that the returned lists are empty
+        self.assertEqual(dates, [])
+        self.assertEqual(steps, [])
+        self.assertEqual(calories, [])
+        self.assertEqual(distance, [])
+        self.assertEqual(time, [])
+    
 
 class TestDisplayGenAiAdvice(unittest.TestCase):
     """Tests the display_genai_advice function."""
