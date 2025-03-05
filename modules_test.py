@@ -39,7 +39,6 @@ class TestDisplayPost(unittest.TestCase):
 
         
 
-
 class TestDisplayActivitySummary(unittest.TestCase):
     """Tests the display_activity_summary function."""
     
@@ -77,10 +76,10 @@ class TestDisplayActivitySummary(unittest.TestCase):
             'TOTAL_TIME': 90
         }
         
-        # Check that create_component was called with the right arguments
+
         mock_create_component.assert_called_once_with(expected_data, "display_summary", height=250)
         
-        # Check that the returned lists are correct
+
         self.assertEqual(dates, ["06-01", "06-02"])
         self.assertEqual(steps, [6500, 4800])
         self.assertEqual(calories, [350, 280])
@@ -114,7 +113,7 @@ class TestDisplayActivitySummary(unittest.TestCase):
         self.assertEqual(calories, [])
         self.assertEqual(distance, [])
         self.assertEqual(time, [])
-    
+
 
 class TestDisplayGenAiAdvice(unittest.TestCase):
     """Tests the display_genai_advice function."""
@@ -138,67 +137,132 @@ class TestDisplayGenAiAdvice(unittest.TestCase):
 
 class TestDisplayRecentWorkouts(unittest.TestCase):
     """Tests the display_recent_workouts function."""
-
-    def setUp(self):
-        """Initialize AppTest before each test with required parameters."""
-        self.app = AppTest(display_recent_workouts, default_timeout=10)
-
-    def test_no_workouts(self):
+    
+    @patch("modules.create_component")
+    def test_no_workouts(self, mock_create_component):
         """Tests when there are no recent workouts."""
-        result = self.app.run([])
-        self.assertIn("No recent workouts available.", result.output)
 
-    def test_single_workout(self):
+        result = display_recent_workouts([])
+        
+        mock_create_component.assert_not_called()
+        
+        self.assertIsNone(result)
+    
+    @patch("modules.create_component")
+    def test_single_workout(self, mock_create_component):
         """Tests displaying a single workout."""
-        workouts = [{
-            "start_time": " 08:00:00",
-            "end_time": "08:30:00",
-            "date": "2024-02-19",
+        workout = {
+            "start_timestamp": "2024-02-19T08:00:00",
+            "end_timestamp": "2024-02-19T08:30:00",
             "workout_id": "workout0",
             "distance": 5.2,
             "steps": 6200,
-            "calories": 320,
+            "calories_burned": 320,
             "start_lat_lng": (37.7749, -122.4194),
             "end_lat_lng": (37.7849, -122.4294),
-        }]
-        result = self.app.run(workouts)
-        self.assertIn("Workout 1:", result.output)
-        self.assertIn("Distance: 5.2 mi", result.output)
-        self.assertIn("Steps: 6200", result.output)
-        self.assertIn("Calories Burned: 320", result.output)
+        }
+        
 
-    def test_multiple_workouts(self):
+        result = display_recent_workouts([workout])
+        
+
+        w_ID, date, start_time, end_time, start_lat, end_lat, distance, steps, calories = result
+
+        self.assertEqual(w_ID, "workout0")
+
+        self.assertEqual(start_lat, (37.7749, -122.4194))
+        self.assertEqual(end_lat, (37.7849, -122.4294))
+        self.assertEqual(distance, 5.2)
+        self.assertEqual(steps, 6200)
+        self.assertEqual(calories, 320)
+
+        expected_data = {
+            'WORKOUT_ID': 'workout0',
+            'DATE': date,  
+            'START_TIME': start_time,  
+            'END_TIME': end_time,  
+            'START_LAT_LNG': (37.7749, -122.4194),
+            'END_LAT_LNG': (37.7849, -122.4294),
+            'DISTANCE': 5.2,
+            'STEPS': 6200,
+            'CALORIES_BURNED': 320,
+        }
+        mock_create_component.assert_called_once_with(expected_data, 'recent_workouts', height=600)
+    
+    @patch("modules.create_component")
+    def test_multiple_workouts(self, mock_create_component):
         """Tests displaying multiple workouts."""
         workouts = [
             {
-                "start_time": " 08:00:00",
-                "end_time": "08:30:00",
-                "date": "2024-02-20",
+                "start_timestamp": "2024-02-20T08:00:00",
+                "end_timestamp": "2024-02-20T08:30:00",
                 "workout_id": "workout1",
                 "distance": 5.2,
                 "steps": 6200,
-                "calories": 320,
+                "calories_burned": 320,
                 "start_lat_lng": (37.7749, -122.4194),
                 "end_lat_lng": (37.7849, -122.4294),
             },
             {
-                "start_time": "09:00:00",
-                "end_time": "09:45:00",
-                "date": "2024-02-21",
+                "start_timestamp": "2024-02-21T09:00:00",
+                "end_timestamp": "2024-02-21T09:45:00",
                 "workout_id": "workout2",
                 "distance": 7.8,
                 "steps": 8900,
-                "calories": 450,
+                "calories_burned": 450,
                 "start_lat_lng": (40.7128, -74.0060),
                 "end_lat_lng": (40.7328, -74.0160),
             },
         ]
-        result = self.app.run(workouts)
-        self.assertIn("Workout 1:", result.output)
-        self.assertIn("Workout 2:", result.output)
-        self.assertIn("Distance: 5.2 mi", result.output)
-        self.assertIn("Distance: 7.8 mi", result.output)
+        
 
+        result = display_recent_workouts(workouts)
+        
+
+        w_ID, date, start_time, end_time, start_lat, end_lat, distance, steps, calories = result
+        
+
+        self.assertEqual(w_ID, "workout2")
+        self.assertEqual(date, "2024-02-21") 
+        self.assertEqual(start_time, "09:00:00")  
+        self.assertEqual(end_time, "09:45:00")
+        self.assertEqual(start_lat, (40.7128, -74.0060))
+        self.assertEqual(end_lat, (40.7328, -74.0160))
+        self.assertEqual(distance, 7.8)
+        self.assertEqual(steps, 8900)
+        self.assertEqual(calories, 450)
+        
+
+        self.assertEqual(mock_create_component.call_count, 2)
+
+        first_call_args = {
+            'WORKOUT_ID': 'workout1',
+            'DATE': '2024-02-20',  
+            'START_TIME': '08:00:00', 
+            'END_TIME': '08:30:00',
+            'START_LAT_LNG': (37.7749, -122.4194),
+            'END_LAT_LNG': (37.7849, -122.4294),
+            'DISTANCE': 5.2,
+            'STEPS': 6200,
+            'CALORIES_BURNED': 320,
+        }
+        
+
+        second_call_args = {
+            'WORKOUT_ID': 'workout2',
+            'DATE': '2024-02-21',
+            'START_TIME': '09:00:00',
+            'END_TIME': '09:45:00',
+            'START_LAT_LNG': (40.7128, -74.0060),
+            'END_LAT_LNG': (40.7328, -74.0160),
+            'DISTANCE': 7.8,
+            'STEPS': 8900,
+            'CALORIES_BURNED': 450,
+        }
+        
+
+        mock_create_component.assert_any_call(first_call_args, 'recent_workouts', height=600)
+        mock_create_component.assert_any_call(second_call_args, 'recent_workouts', height=600)
 
 if __name__ == "__main__":
     unittest.main()
