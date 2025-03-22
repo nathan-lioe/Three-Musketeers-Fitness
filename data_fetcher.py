@@ -7,6 +7,7 @@ from datetime import datetime
 client = bigquery.Client(project="composite-snow-453203-f9", location='US')
 
 
+
 # Perform query
 def run_query(query):
     query_job = client.query(query)
