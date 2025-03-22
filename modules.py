@@ -110,41 +110,36 @@ def format_time(timestamp_str):
     return timestamp_str[11:] if timestamp_str else "Unknown"
 
 
-def display_recent_workouts(workouts_list):
-
-    if not workouts_list:
-        return None
-        
-    last_workout_info = None
+def display_recent_workouts(workout): # changed this to only get one workout, and not a list of workouts
     
-    for workout in workouts_list:
-        w_ID = workout.get('workout_id', 0)
-        date = format_date(workout.get('start_timestamp', ""))
-        start_time = format_time(workout.get('start_timestamp', ""))
-        end_time = format_time(workout.get('end_timestamp', ""))
-        start_lat = workout.get('start_lat_lng', 0)
-        end_lat = workout.get('end_lat_lng', 0)
-        distance = workout.get('distance', 0)
-        steps = workout.get('steps', 0)
-        calories = workout.get('calories_burned', 0)
+    w_ID = workout.get('WorkoutId', 0) # changed the capitalisation of this to be the same as in the data fetcher
+    date = format_date(workout.get('StartTimeStamp', "")) # changed this to StartTimeStamp
+    start_time = format_time(workout.get('StartTimeStamp', "")) # changed this to StartTimeStamp
+    end_time = format_time(workout.get('EndTimeStamp', "")) # changed this to EndTimeStamp
+    start_lat = workout.get('StartLocationLat', 0)
+    end_lat = workout.get('EndLocationLat', 0)
+    start_lng = workout.get('StartLocationLong', 0)
+    end_lng = workout.get('EndLocationLong', 0)
+    distance = workout.get('TotalDistance', 0) #changed this to TotalDistance
+    steps = workout.get('TotalSteps', 0) #changed this to TotalSteps
+    calories = workout.get('CaloriesBurned', 0) #changed this to CaloriesBurned
         
-        workout_data = {
-            'WORKOUT_ID': w_ID,
-            'DATE': date, 
-            'START_TIME': start_time,  
-            'END_TIME': end_time,
-            'START_LAT_LNG': start_lat,
-            'END_LAT_LNG': end_lat,
-            'DISTANCE': distance,
-            'STEPS': steps,
-            'CALORIES_BURNED': calories
-        }
+    workout_data = {
+        'WORKOUT_ID': w_ID,
+        'DATE': date, 
+        'START_TIME': start_time,  
+        'END_TIME': end_time,
+        'START_LAT': start_lat,
+        'START_LNG': start_lng,
+        'END_LAT':end_lat,
+        'END_LNG':end_lng,
+        'DISTANCE': distance,
+        'STEPS': steps,
+        'CALORIES_BURNED': calories
+    }
 
-        create_component(workout_data, "recent_workouts", height=600)
-        
-        last_workout_info = (w_ID, date, start_time, end_time, start_lat, end_lat, distance, steps, calories)
+    create_component(workout_data, "recent_workouts", height=600)
     
-    return last_workout_info
 
 
 def display_genai_advice(timestamp, content, image):
@@ -154,5 +149,5 @@ def display_genai_advice(timestamp, content, image):
         'content' : content,
         'post_image' : image
     }
-    html_file_name = "gen_ai_display"
+    html_file_nameat, = "gen_ai_display"
     create_component(data, html_file_name, 600)
