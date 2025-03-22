@@ -85,3 +85,9 @@ def display_genai_advice(advice_id, timestamp, content, image):
     # }
     # html_file_name = "gen_ai_display"
     # create_component(data, html_file_name, 600)
+
+def display_post():
+    pass
+
+def display_recent_workouts():
+    pass
