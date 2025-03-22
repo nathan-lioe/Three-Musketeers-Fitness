@@ -75,8 +75,48 @@ def display_activity_summary(workouts_list):
     return date,steps, calories,distance,time
 
 
+def format_date(timestamp_str):
+    """Extracts the date (YYYY-MM-DD) from a timestamp string using slicing."""
+    return timestamp_str[:10] if timestamp_str else "Unknown"
 
-def display_genai_advice(advice_id, timestamp, content, image):
+def format_time(timestamp_str):
+    """Extracts the time (HH:MM:SS) from a timestamp string using slicing."""
+    return timestamp_str[11:] if timestamp_str else "Unknown"
+
+
+def display_recent_workouts(workout): # changed this to only get one workout, and not a list of workouts
+    
+    w_ID = workout.get('WorkoutId', 0) # changed the capitalisation of this to be the same as in the data fetcher
+    date = format_date(workout.get('StartTimeStamp', "")) # changed this to StartTimeStamp
+    start_time = format_time(workout.get('StartTimeStamp', "")) # changed this to StartTimeStamp
+    end_time = format_time(workout.get('EndTimeStamp', "")) # changed this to EndTimeStamp
+    start_lat = workout.get('StartLocationLat', 0)
+    end_lat = workout.get('EndLocationLat', 0)
+    start_lng = workout.get('StartLocationLong', 0)
+    end_lng = workout.get('EndLocationLong', 0)
+    distance = workout.get('TotalDistance', 0) #changed this to TotalDistance
+    steps = workout.get('TotalSteps', 0) #changed this to TotalSteps
+    calories = workout.get('CaloriesBurned', 0) #changed this to CaloriesBurned
+        
+    workout_data = {
+        'WORKOUT_ID': w_ID,
+        'DATE': date, 
+        'START_TIME': start_time,  
+        'END_TIME': end_time,
+        'START_LAT': start_lat,
+        'START_LNG': start_lng,
+        'END_LAT':end_lat,
+        'END_LNG':end_lng,
+        'DISTANCE': distance,
+        'STEPS': steps,
+        'CALORIES_BURNED': calories
+    }
+
+    create_component(workout_data, "recent_workouts", height=600)
+    
+
+
+def display_genai_advice(timestamp, content, image):
     """Write a good docstring here."""
     # data = {
     #     'timestamp' : timestamp,

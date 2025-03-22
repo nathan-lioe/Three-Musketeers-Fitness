@@ -1,3 +1,7 @@
 streamlit
 pandas
 numpy
+google-cloud-bigquery
+google-auth
+python-dotenv
+streamlit-extras
