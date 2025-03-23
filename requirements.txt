@@ -5,3 +5,4 @@ google-cloud-bigquery
 google-auth
 python-dotenv
 streamlit-extras
+google-cloud-aiplatform

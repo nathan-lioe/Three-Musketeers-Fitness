@@ -143,6 +143,68 @@ def get_genai_advice(userid):
     return advice_parts
 
 
+def insert_post(user_id, content, image_url=None):
+    """
+    Inserts a new post into the Posts table.
+    
+    Args:
+        user_id (str): The ID of the user making the post.
+        content (str): The content of the post.
+        image_url (str, optional): The URL of an image (if applicable).
+    """
+    post_table = "CIS4993.Posts"
+
+    # Get current timestamp
+    timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+
+    # Prepare the row data
+    row = {
+        "PostId": f"{user_id}_{int(datetime.timestamp(datetime.now()))}",  # Unique ID
+        "AuthorId": user_id,
+        "Timestamp": timestamp,
+        "Content": content,
+        "ImageUrl": image_url or ""
+    }
+
+def get_user_steps(user_id):
+    """Fetches the user's steps data from the activity table."""
+    query = f'''
+    SELECT TotalSteps
+    FROM `CIS4993.Workouts`
+    WHERE UserId = '{user_id}'
+    ORDER BY StartTimeStamp DESC
+    LIMIT 1
+    '''
+    result = run_query(query)
+    return result[0]['TotalSteps'] if result else 0
+
+def insert_post(user_id, content, image_url=None):
+    """
+    Inserts a new post into the Posts table.
+    
+    Args:
+        user_id (str): The ID of the user making the post.
+        content (str): The content of the post.
+        image_url (str, optional): The URL of an image (if applicable).
+    """
+    post_table = "CIS4993.Posts"
+
+    # Get current timestamp
+    timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+
+    # Generate a unique PostId
+    post_id = f"{user_id}_{int(datetime.timestamp(datetime.now()))}"
+
+    # SQL query to insert the post
+    query = f"""
+    INSERT INTO `{post_table}` (PostId, AuthorId, Timestamp, Content, ImageUrl)
+    VALUES ('{post_id}', '{user_id}', '{timestamp}', '{content}', '{image_url or ""}')
+    """
+    
+    # Run the insert query
+    run_query(query)
+
+
 
 # Example usage
 # if __name__ == '__main__':

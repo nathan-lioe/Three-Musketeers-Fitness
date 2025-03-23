@@ -10,6 +10,7 @@ from modules import display_post, display_genai_advice, display_activity_summary
 from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts
 import pandas as pd
 import numpy as np
+import vertexai
 # import streamlit_extras.switch_page_button as spb  # For internal navigation
 
 # Set page configuration with the dark blue background
@@ -71,7 +72,7 @@ with tab1:
     st.header("Activity Summary")
 
     
-    workout_list = get_user_workouts(userId)
+    workout_list = get_user_workouts(userId) 
     date, steps, calories, distance, time = display_activity_summary(workout_list)
 
     steps_data = pd.DataFrame(

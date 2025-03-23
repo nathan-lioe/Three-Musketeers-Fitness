@@ -33,8 +33,12 @@ def display_activity_summary(workouts_list):
         end_time = x.get("EndTimestamp")
     
         # Check if timestamps exist
+        # if not start_time or not end_time:
+        #     return 0, "Unknown date"
+
         if not start_time or not end_time:
-            return 0, "Unknown date"
+            return ["Unknown date"], [0], [0], [0], [0]  # Return five values with default placeholders
+
     
         # Calculate duration in minutes
         duration = end_time - start_time
@@ -129,5 +133,3 @@ def display_genai_advice(timestamp, content, image):
 def display_post():
     pass
 
-def display_recent_workouts():
-    pass
