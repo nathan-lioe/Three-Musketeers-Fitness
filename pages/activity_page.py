@@ -16,7 +16,7 @@ st.markdown("""
         border-radius: 30px;
     }
     .st-emotion-cache-10trblm {
-        background-color: #f0f0f5;
+        background-color: #f0f0f5c;
         border-radius: 30px;
     }
     .st-emotion-cache-1wrcr25 {
@@ -53,15 +53,20 @@ else:
 st.subheader("Recent Workouts")
 workouts = get_user_workouts(user_id)
 
+# Debug: Print the entire workouts list
+#st.write("Debug - All Workouts:", workouts)
+
 if workouts:
     recent_workouts = workouts[:3]  # Display only the most recent 3 workouts
-    for workout in recent_workouts:
-        with st.expander(f"Workout ID: {workout['WorkoutId']}"):
+    for idx, workout in enumerate(recent_workouts):
+        with st.expander(f"Workout {idx + 1} - {format_timestamp(workout['StartTimeStamp'])}"):
+            st.write(f"**Workout ID:** {workout['WorkoutId']}")
             st.write(f"**Start:** {format_timestamp(workout['StartTimeStamp'])}")
             st.write(f"**End:** {format_timestamp(workout['EndTimeStamp'])}")
             st.write(f"**Distance:** {workout['TotalDistance']} km")
             st.write(f"**Steps:** {workout['TotalSteps']}")
             st.write(f"**Calories Burned:** {workout['CaloriesBurned']} kcal")
+
 
 # Activity summary
 st.subheader("Activity Summary")
@@ -109,7 +114,7 @@ if workouts:
     if st.button("Share", key=f"share_{user_id}"):
         if st.session_state.preview_content:
             # Insert the post into the database
-            insert_post(user_id, st.session_state.preview_content)
+            insert_post(user_id, st.session_state.preview_content, image_url=None)
 
             # Clear the preview content after sharing
             st.session_state.preview_content = ""

@@ -13,17 +13,17 @@ import numpy as np
 import vertexai
 # import streamlit_extras.switch_page_button as spb  # For internal navigation
 
-# Set page configuration with the dark blue background
+# Set page configuration with the dark blue background; changed to grey for visibility
 st.set_page_config(layout="wide", page_title="Three Musketeers App")
 
 # Add custom CSS for pill-style tabs
 st.markdown("""
 <style>
     
-/* Make the tab container full width */
+/* Make the tab container full width. */
 
     .stTabs [data-baseweb="tab-list"] {
-        background-color: #1d4e69;
+        background-color: #f0f0f5; /* Changed to a light grey */
         border-radius: 30px;
         padding: 5px 10px;
         width: 100%;        /* This makes it full width */
@@ -35,7 +35,7 @@ st.markdown("""
     /* Make tabs distribute evenly across the full width */
     .stTabs [data-baseweb="tab"] {
         flex: 1;            /* This makes each tab take equal space */
-        color: #e0e0e0;
+        color: #333333; /* Changed to a dark grey for text */
         border: none;
         border-radius: 20px;
         padding: 8px 0;     /* Vertical padding only, let flex handle width */
@@ -44,8 +44,8 @@ st.markdown("""
     }
     /* Style the active tab */
     .stTabs [aria-selected="true"] {
-        background-color: #0d2c3e;
-        color: white;
+        background-color: #cccccc; /* Changed to a light grey for active tab background */
+        color: black;
     }
     
     /* Content area background (optional) */
@@ -54,9 +54,9 @@ st.markdown("""
         color: white;
     }
     
-    /* Make headers and text white */
+    /* Make headers and text black used to white */
     h1, h2, h3, p {
-        color: white;
+        color: black;
     }
 </style>
 """, unsafe_allow_html=True)

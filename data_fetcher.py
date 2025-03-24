@@ -4,8 +4,7 @@ from vertexai.generative_models import GenerativeModel
 from datetime import datetime
 
 # Create API client
-client = bigquery.Client(project="composite-snow-453203-f9", location='US')
-
+client = bigquery.Client(project="ise-w-genai", location='US')
 
 
 # Perform query
@@ -142,42 +141,6 @@ def get_genai_advice(userid):
     
     return advice_parts
 
-
-def insert_post(user_id, content, image_url=None):
-    """
-    Inserts a new post into the Posts table.
-    
-    Args:
-        user_id (str): The ID of the user making the post.
-        content (str): The content of the post.
-        image_url (str, optional): The URL of an image (if applicable).
-    """
-    post_table = "CIS4993.Posts"
-
-    # Get current timestamp
-    timestamp = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-
-    # Prepare the row data
-    row = {
-        "PostId": f"{user_id}_{int(datetime.timestamp(datetime.now()))}",  # Unique ID
-        "AuthorId": user_id,
-        "Timestamp": timestamp,
-        "Content": content,
-        "ImageUrl": image_url or ""
-    }
-
-def get_user_steps(user_id):
-    """Fetches the user's steps data from the activity table."""
-    query = f'''
-    SELECT TotalSteps
-    FROM `CIS4993.Workouts`
-    WHERE UserId = '{user_id}'
-    ORDER BY StartTimeStamp DESC
-    LIMIT 1
-    '''
-    result = run_query(query)
-    return result[0]['TotalSteps'] if result else 0
-
 def insert_post(user_id, content, image_url=None):
     """
     Inserts a new post into the Posts table.
@@ -207,11 +170,10 @@ def insert_post(user_id, content, image_url=None):
 
 
 # Example usage
-# if __name__ == '__main__':
-#     user_id = "user1"
-#     workout_id = "workout1"
+if __name__ == '__main__':
+     user_id = "user1"
+     workout_id = "workout1"
 #     print(get_user_sensor_data(user_id, workout_id))
-#     print(get_user_workouts(user_id))
+     print(get_user_workouts(user_id))
 #     print(get_user_profile(user_id))
 #     print(get_user_posts(user_id))
-    
