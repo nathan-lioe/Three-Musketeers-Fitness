@@ -74,30 +74,46 @@ def display_activity_summary(workouts_list):
     create_component(data, html_file_name,height=375)
     return date,steps, calories,distance,time
 
-
-def format_date(timestamp_str):
-    """Extracts the date (YYYY-MM-DD) from a timestamp string using slicing."""
-    return timestamp_str[:10] if timestamp_str else "Unknown"
-
-def format_time(timestamp_str):
-    """Extracts the time (HH:MM:SS) from a timestamp string using slicing."""
-    return timestamp_str[11:] if timestamp_str else "Unknown"
-
-
-def display_recent_workouts(workout): # changed this to only get one workout, and not a list of workouts
+def format_time(timestamp):
+    """Extracts the time component from a timestamp, handling both datetime objects and strings."""
+    if not timestamp:
+        return "Unknown"
     
-    w_ID = workout.get('WorkoutId', 0) # changed the capitalisation of this to be the same as in the data fetcher
-    date = format_date(workout.get('StartTimeStamp', "")) # changed this to StartTimeStamp
-    start_time = format_time(workout.get('StartTimeStamp', "")) # changed this to StartTimeStamp
-    end_time = format_time(workout.get('EndTimeStamp', "")) # changed this to EndTimeStamp
+    # If it's a datetime object
+    if hasattr(timestamp, 'strftime'):
+        return timestamp.strftime('%H:%M:%S')
+    
+    # If it's a string
+    return timestamp[11:19]  # Limiting to HH:MM:SS format
+
+
+
+def display_recent_workouts(workout):
+    """
+    Format a single workout record and create a component to display it.
+    
+    Args:
+        workout: A dictionary containing workout data
+    """
+    w_ID = workout.get('WorkoutId', 0)
+    
+    # Get the timestamp values
+    start_timestamp = workout.get('StartTimestamp', "")
+    end_timestamp = workout.get('EndTimestamp', "")
+    
+    # Format date and time separately
+    date = start_timestamp
+    start_time = format_time(start_timestamp)
+    end_time = format_time(end_timestamp)
+    
     start_lat = workout.get('StartLocationLat', 0)
     end_lat = workout.get('EndLocationLat', 0)
     start_lng = workout.get('StartLocationLong', 0)
     end_lng = workout.get('EndLocationLong', 0)
-    distance = workout.get('TotalDistance', 0) #changed this to TotalDistance
-    steps = workout.get('TotalSteps', 0) #changed this to TotalSteps
-    calories = workout.get('CaloriesBurned', 0) #changed this to CaloriesBurned
-        
+    distance = workout.get('TotalDistance', 0)
+    steps = workout.get('TotalSteps', 0)
+    calories = workout.get('CaloriesBurned', 0)
+          
     workout_data = {
         'WORKOUT_ID': w_ID,
         'DATE': date, 
@@ -105,29 +121,34 @@ def display_recent_workouts(workout): # changed this to only get one workout, an
         'END_TIME': end_time,
         'START_LAT': start_lat,
         'START_LNG': start_lng,
-        'END_LAT':end_lat,
-        'END_LNG':end_lng,
+        'END_LAT': end_lat,
+        'END_LNG': end_lng,
         'DISTANCE': distance,
         'STEPS': steps,
         'CALORIES_BURNED': calories
     }
-
-    create_component(workout_data, "recent_workouts", height=600)
+    
+    create_component(workout_data, "recent_workouts", height=400)
     
 
 
-def display_genai_advice(timestamp, content, image):
+def display_genai_advice(timestamp, advice, image):
     """Write a good docstring here."""
-    # data = {
-    #     'timestamp' : timestamp,
-    #     'content' : content,
-    #     'post_image' : image
-    # }
-    # html_file_name = "gen_ai_display"
-    # create_component(data, html_file_name, 600)
+    data = {
+        'timestamp' : timestamp,
+        'advice' : advice,
+        'image' : image
+    }
+    html_file_name = "display_advice"
+    create_component(data, html_file_name, 600)
 
-def display_post():
-    pass
-
-def display_recent_workouts():
-    pass
+def display_post(username, user_image, timestamp, content, post_image):
+    data = {
+        'username' : username,
+        'user_image' : user_image,
+        'timestamp' : timestamp,
+        'content' : content,
+        'post_image' : post_image
+    }
+    html_file_name = "display_post"
+    create_component(data, html_file_name, 600)

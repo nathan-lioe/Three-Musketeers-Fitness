@@ -1,19 +1,23 @@
+import os
 from google.cloud import bigquery
 import vertexai                                            
 from vertexai.generative_models import GenerativeModel 
 from datetime import datetime
 
+
+
 # Create API client
-client = bigquery.Client(project="composite-snow-453203-f9", location='US')
-
-
+client = bigquery.Client()
+table_name = f"ise-w-genai.CIS4993.Workouts"
 
 # Perform query
 def run_query(query):
     query_job = client.query(query)
-    # Convert to hashable list format
+    # Convert to hashable list format, which allows the caching to work
     rows = [dict(row) for row in query_job.result()]
     return rows
+
+rows = run_query(f"SELECT * FROM `{table_name}`")
 
 def get_user_sensor_data(user_id, workout_id):
     sensor_data_table = "CIS4993.SensorData"
@@ -39,51 +43,18 @@ def get_user_sensor_data(user_id, workout_id):
 
     return rows  # Return data for further processing if needed
 
-def get_user_workouts(user_id):
-    """Fetches and returns a list of workouts for the given user from BigQuery."""
-    workout_table = "CIS4993.Workouts"
 
-    query = f'''
-    SELECT WorkoutId, StartTimeStamp, EndTimeStamp, TotalDistance, TotalSteps, CaloriesBurned, StartLocationLat, EndLocationLat, StartLocationLong, EndLocationLong
-    FROM `{workout_table}`
-    WHERE UserId = '{user_id}'
-    ORDER BY StartTimeStamp DESC
-    '''
-
-    rows = run_query(query)
-    for row in rows:
-        # Convert StartTimeStamp and EndTimeStamp to strings in 'YYYY-MM-DDTHH:MM:SS' format
-        if isinstance(row['StartTimeStamp'], datetime):
-            row['StartTimeStamp'] = row['StartTimeStamp'].strftime('%Y-%m-%dT%H:%M:%S')
-        if isinstance(row['EndTimeStamp'], datetime):
-            row['EndTimeStamp'] = row['EndTimeStamp'].strftime('%Y-%m-%dT%H:%M:%S')
+def get_user_workouts(userid):
+    """Write a good docstring here."""
+    table_name = f"ise-w-genai.CIS4993.Workouts"
+    rows = run_query(f"SELECT * FROM `{table_name}` WHERE userId = '{userid}'")
     return rows
 
-def get_user_profile(user_id):
-    """Fetches and returns the profile information of a given user from BigQuery."""
-    user_table = "CIS4993.Users"
-
-    query = f'''
-    SELECT UserId, Name, Username, DateOfBirth, ImageUrl
-    FROM `{user_table}`
-    WHERE UserId = '{user_id}'
-    '''
-
-    rows = run_query(query)
-    return rows[0] if rows else None
-
-def get_user_posts(user_id):
-    """Fetches and returns a list of posts by a given user from BigQuery."""
-    post_table = "CIS4993.Posts"
-
-    query = f'''
-    SELECT PostId, AuthorId, Timestamp, Content, ImageUrl
-    FROM `{post_table}`
-    WHERE AuthorId = '{user_id}'
-    ORDER BY Timestamp DESC
-    '''
-
-    return run_query(query)
+def get_recent_workouts(userid):
+    """Write a good docstring here."""
+    table_name = f"ise-w-genai.CIS4993.Workouts"
+    rows = run_query(f"SELECT * FROM `{table_name}` WHERE userId = '{userid}' ORDER BY timestamp DESC LIMIT=3")
+    return rows
 
 def get_genai_advice(userid):
     """
@@ -102,54 +73,98 @@ def get_genai_advice(userid):
             - 'timestamp': Current timestamp when advice was generated
             - 'image_url': URL to a motivational fitness image from Pexels
     """
+
     vertexai.init(location="us-central1")
     model = GenerativeModel("gemini-1.5-flash-002")
     workout = get_user_workouts(userid)
     
     cals = workout[0].get('CaloriesBurned')
+    prompt = (
+    f"You are a knowledgeable fitness motivator give the user motivation they burnt {cals} please give a sentence not just good job "
+
+
+)
     
-    response = model.generate_content(
-        f"Give the advice on his workout and with a timestamp and a motivational image. "
-        f"The person burned {cals} calories. It does not need to be specific just short and simple. "
-        f"Give me a link with a Pexels image. Return in this format: "
-        f"ADVICE: [your advice text] TIMESTAMP: [current timestamp] IMAGE: [pexels image url]"
-    )
     
-    print(response.text)
+    response = model.generate_content(prompt)
+    
     
     # Parse the response text to extract the components
     response_text = response.text
-    
     # Extract advice, timestamp and image URL using string parsing
     advice_parts = {}
     
-    if "ADVICE:" in response_text:
-        advice_parts['advice'] = response_text.split("ADVICE:")[1].split("TIMESTAMP:")[0].strip()
-    else:
-        advice_parts['advice'] = "Great job on your workout!"
+    
+    advice_parts['advice'] = response_text
+    print(advice_parts['advice'])
+
         
-    if "TIMESTAMP:" in response_text:
-        advice_parts['timestamp'] = response_text.split("TIMESTAMP:")[1].split("IMAGE:")[0].strip()
-    else:
-        from datetime import datetime
-        advice_parts['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    advice_parts['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
-    if "IMAGE:" in response_text:
-        advice_parts['image_url'] = response_text.split("IMAGE:")[1].strip()
-    else:
-        # Default to Pexels workout images instead of Unsplash
-        advice_parts['image_url'] = "https://www.pexels.com/search/quote/"
+
+    advice_parts['image_url'] = "https://picsum.photos/200"
     
     return advice_parts
 
-
-
-# Example usage
-# if __name__ == '__main__':
-#     user_id = "user1"
-#     workout_id = "workout1"
-#     print(get_user_sensor_data(user_id, workout_id))
-#     print(get_user_workouts(user_id))
-#     print(get_user_profile(user_id))
-#     print(get_user_posts(user_id))
+def get_user_profile(user_id):
+    """
+    Retrieve profile information for a specific user.
     
+    This function queries the database for user profile data and returns
+    a dictionary containing personal information and social connections.
+    
+    Args:
+        user_id (str): The unique identifier for the user
+        
+    Returns:
+        dict: A dictionary containing user profile information with the keys:
+            - 'full_name': The user's full name
+            - 'username': The user's username
+            - 'date_of_birth': The user's date of birth
+            - 'profile_image': URL to the user's profile image
+            - 'friends': A list of user IDs representing the user's friends
+    """
+    table_name = f"ise-w-genai.CIS4993.Users"
+    user_data = run_query(f"SELECT * FROM `{table_name}` WHERE UserId = '{user_id}'")
+    
+    if not user_data:
+        return None
+    
+    # Get the friends list from the Friends table
+    friends_table = f"ise-w-genai.CIS4993.Friends"
+    friends_data = run_query(f"SELECT UserId2 FROM `{friends_table}` WHERE UserId1 = '{user_id}'")
+    
+    # Extract friend IDs into a list
+    friends_list = [friend['UserId2'] for friend in friends_data]
+    
+    # Construct the profile dictionary
+    profile = {
+        'full_name': user_data[0].get('Name', ''),  # Changed to match output requirement
+        'username': user_data[0].get('Username', ''),
+        'date_of_birth': user_data[0].get('DateOfBirth', ''),
+        'profile_image': user_data[0].get('ImageUrl', ''),
+        'friends': friends_list
+    }
+    
+    return profile
+
+
+def get_user_posts(user_id):
+    table_name = f"ise-w-genai.CIS4993.Posts"
+    posts = run_query(f"SELECT * FROM `{table_name}` WHERE AuthorId = '{user_id}' ORDER BY timestamp DESC")
+    return posts
+
+
+def get_friends_post(author_ids):
+    table_name = f"ise-w-genai.CIS4993.Posts"
+    formatted_ids = ", ".join(f"'{author_id}'" for author_id in author_ids)
+    posts = run_query(f"SELECT * FROM `{table_name}` WHERE AuthorId IN ({formatted_ids}) ORDER BY timestamp DESC LIMIT 10")
+    return posts
+
+def insert_post(author_id, content, image_url):
+    table_name = f"ise-w-genai.CIS4993.Posts"
+    query = run_query(f"INSERT INTO `{table_name}` (AuthorId, Content, ImageUrl) VALUES ('{author_id}', '{content}', '{image_url}')")
+
+
+
+
