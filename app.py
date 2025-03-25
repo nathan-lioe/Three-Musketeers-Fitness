@@ -9,6 +9,7 @@ import streamlit as st
 from modules import display_post, display_genai_advice, display_activity_summary, display_recent_workouts
 from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts,get_genai_advice
 from community import show_posts
+from activity import display
 import pandas as pd
 import numpy as np
 # import streamlit_extras.switch_page_button as spb  # For internal navigation
@@ -90,38 +91,7 @@ tab1, tab2, tab3 = st.tabs(["Activity", "Community", "Profile"])
 with tab1:
 
     st.header("Activity Summary")
-
-    workout_list = get_user_workouts(userId)
-    date, steps, calories, distance, time = display_activity_summary(workout_list)
-
-    steps_data = pd.DataFrame(
-    {
-        "Day": date,
-        "Steps": steps
-    }
-)
-
-    recent_workouts = get_user_workouts(userId)
-    
-    if recent_workouts:
-        workouts_data = recent_workouts
-        st.header("🏋️ Recent Workouts")
-        for workout in workouts_data: # iterate each workout
-            display_recent_workouts(workout) # call display_recent_workouts for each workout
-    else:
-        st.write("🚫 No recent workouts available.")
-    
-    st.subheader("Daily Steps Trend")
-
-    st.line_chart(
-    steps_data.set_index("Day")["Steps"],  # This selects only the Steps column
-    use_container_width=True  # This makes the chart use the full width
-    )
-
-
-
-    
-
+    display(userId)
 
 # Community tab
 with tab2:
@@ -131,7 +101,6 @@ with tab2:
         show_posts(userId)
     with col2:
         advice= get_genai_advice(userId)
-        print(advice)
         display_genai_advice(advice.get("timestamp", ""), advice.get("advice", ""), advice.get("image_url", ""))
     
 
@@ -141,7 +110,6 @@ with tab3:
     
     col1, col2 = st.columns([1, 2])
     profile = get_user_profile(userId)
-    print(profile)
     user_profile = {
         "Name": profile.get("full_name", "Name"),
         "Username": profile.get("username", "Username"),

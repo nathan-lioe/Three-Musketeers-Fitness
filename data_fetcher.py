@@ -96,7 +96,6 @@ def get_genai_advice(userid):
     
     
     advice_parts['advice'] = response_text
-    print(advice_parts['advice'])
 
         
     advice_parts['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -161,9 +160,9 @@ def get_friends_post(author_ids):
     posts = run_query(f"SELECT * FROM `{table_name}` WHERE AuthorId IN ({formatted_ids}) ORDER BY timestamp DESC LIMIT 10")
     return posts
 
-def insert_post(author_id, content, image_url):
+def insert_post(postId,author_id, timestamp, content, image_url):
     table_name = f"ise-w-genai.CIS4993.Posts"
-    query = run_query(f"INSERT INTO `{table_name}` (AuthorId, Content, ImageUrl) VALUES ('{author_id}', '{content}', '{image_url}')")
+    query = run_query(f"INSERT INTO `{table_name}` (PostId,AuthorId,Timestamp, Content, ImageUrl) VALUES ('{postId}','{author_id}','{timestamp}', '{content}', '{image_url}')")
 
 
 
