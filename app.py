@@ -6,75 +6,160 @@
 #############################################################################
 
 import streamlit as st
-from modules import display_my_custom_component, display_post, display_genai_advice, display_activity_summary, display_recent_workouts
-from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get_user_sensor_data, get_user_workouts
+from modules import display_post, display_genai_advice, display_activity_summary, display_recent_workouts
+from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts,get_genai_advice
+from community import show_posts
 import pandas as pd
 import numpy as np
+# import streamlit_extras.switch_page_button as spb  # For internal navigation
+
+# Set page configuration with the dark blue background
+st.set_page_config(layout="wide", page_title="Three Musketeers App")
+
+# Add custom CSS for pill-style tabs
+st.markdown("""
+<style>
+    /* Keep your custom tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: #1d4e69;
+        border-radius: 30px;
+        padding: 5px 10px;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        gap: 0;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        flex: 1;
+        color: #e0e0e0;
+        border: none;
+        border-radius: 20px;
+        padding: 8px 0;
+        text-align: center;
+        background-color: transparent;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background-color: #0d2c3e;
+        color: white;
+    }
+    
+    /* Remove the white text color for normal content */
+    /* h1, h2, h3, p {
+        color: white;
+    } */
+    
+    /* Instead, style headers with a color that complements your tabs */
+    h1, h2, h3 {
+        color: #1d4e69;
+    }
+    
+    /* Add subtle styling for content areas to create visual hierarchy */
+    .stTabs [data-testid="stTabsContent"] {
+        background-color: #f8f9fa;
+        border-radius: 0 0 10px 10px;
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        border-top: none;
+    }
+    
+    /* Add styling for expanders to match the theme */
+    .streamlit-expanderHeader {
+        background-color: #e9ecef;
+        color: #1d4e69;
+        border-radius: 5px;
+    }
+    
+    /* Add a subtle accent border to charts */
+    .stChart {
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        padding: 10px;
+        background-color: white;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 userId = 'user1'
 
+# Create a horizontal navigation menu with st.tabs
+tab1, tab2, tab3 = st.tabs(["Activity", "Community", "Profile"])
 
-def display_app_page():
-    """Displays the home page of the app."""
-    st.title('Three Musketeers App!')
-
+# Home tab
+with tab1:
 
     st.header("Activity Summary")
 
-    # Test data
-    list = []
-    for x in range(3):
-        test = get_user_workouts(userId)
-        list.append(test)
-    date, steps, calories,distance,time = display_activity_summary(list)
-    table_data = pd.DataFrame(
-        {
-            "Day": date,
-            "Calories": calories,
-            "Steps": steps,
-            "Distance": distance,
-            "Time (minutes)": time
-            
-        }
-    )
-    st.subheader("Detailed workout list")
-    st.table(table_data)
-    st.markdown('#')
+    workout_list = get_user_workouts(userId)
+    date, steps, calories, distance, time = display_activity_summary(workout_list)
 
-    st.subheader("Steps trend")
-    chart_data = pd.DataFrame(
-        {
-            "Day": date,
-            "Steps": steps
-        }
-    )
-    st.bar_chart(chart_data, x="Day", y="Steps")
+    steps_data = pd.DataFrame(
+    {
+        "Day": date,
+        "Steps": steps
+    }
+)
 
-    # Fetch and display recent workouts
     recent_workouts = get_user_workouts(userId)
-
+    
     if recent_workouts:
-            st.header("🏋️ Recent Workouts")
-            with st.expander("View Recent Workouts"):
-                display_recent_workouts(recent_workouts)
+        workouts_data = recent_workouts
+        st.header("🏋️ Recent Workouts")
+        for workout in workouts_data: # iterate each workout
+            display_recent_workouts(workout) # call display_recent_workouts for each workout
     else:
         st.write("🚫 No recent workouts available.")
-        return
+    
+    st.subheader("Daily Steps Trend")
 
-    #display post
-    st.header("Community activity")
-    username = "roary"
-    user_image = "https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg"
-    timestamp = "01-01-1900"
-    content = "This is a test"
-    post_image = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Ludovic_and_Lauren_%288425515069%29.jpg/330px-Ludovic_and_Lauren_%288425515069%29.jpg"
-    display_post(username, user_image, timestamp, content, post_image)
+    st.line_chart(
+    steps_data.set_index("Day")["Steps"],  # This selects only the Steps column
+    use_container_width=True  # This makes the chart use the full width
+    )
 
-    st.header("GenAi's advice")
-    advice = get_genai_advice(userId)
 
-    display_genai_advice(advice.get('timestamp'), advice.get('content'), advice.get('image'))
 
-# This is the starting point for your app. You do not need to change these lines
-if __name__ == '__main__':
-    display_app_page()
+    
+
+
+# Community tab
+with tab2:
+    st.title("Community Activity")
+    col1, col2 = st.columns([6, 4])  
+    with col1:
+        show_posts(userId)
+    with col2:
+        advice= get_genai_advice(userId)
+        print(advice)
+        display_genai_advice(advice.get("timestamp", ""), advice.get("advice", ""), advice.get("image_url", ""))
+    
+
+# Profile tab
+with tab3:
+    st.title("Your Profile")
+    
+    col1, col2 = st.columns([1, 2])
+    profile = get_user_profile(userId)
+    print(profile)
+    user_profile = {
+        "Name": profile.get("full_name", "Name"),
+        "Username": profile.get("username", "Username"),
+        "Date of Birth": profile.get("date_of_birth", "Date of Birth"),
+        "Profile_Image": profile.get("profile_image", " https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg ")
+
+}
+    
+    with col1:
+        #st.image(user_profile.get("Profile_Image"), width=400)
+        st.image("https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg", width=400)
+    
+    with col2:
+        st.markdown("### Personal Information")
+        st.write(f"**Name:** {user_profile.get("Name")}")
+        st.write(f"**Username:** {user_profile.get("Username")}")
+        st.write(f"**Date of Birth** {user_profile.get("Date of Birth")}")
+
+
+    
+

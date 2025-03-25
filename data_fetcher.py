@@ -1,161 +1,170 @@
-#############################################################################
-# data_fetcher.py
-#
-# This file contains functions to fetch data needed for the app.
-#
-# You will re-write these functions in Unit 3, and are welcome to alter the
-# data returned in the meantime. We will replace this file with other data when
-# testing earlier units.
-#############################################################################
 import os
 from google.cloud import bigquery
+import vertexai                                            
+from vertexai.generative_models import GenerativeModel 
+from datetime import datetime
+
+
 
 # Create API client
 client = bigquery.Client()
+table_name = f"ise-w-genai.CIS4993.Workouts"
 
-# Table name
-table_name = f"ise-w-genai.CIS4993.Friends"
-
-#Perform query
+# Perform query
 def run_query(query):
     query_job = client.query(query)
     # Convert to hashable list format, which allows the caching to work
     rows = [dict(row) for row in query_job.result()]
     return rows
 
-users = {
-    'user1': {
-        'full_name': 'Remi',
-        'username': 'remi_the_rems',
-        'date_of_birth': '1990-01-01',
-        'profile_image': 'https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg',
-        'friends': ['user2', 'user3', 'user4'],
-    },
-    'user2': {
-        'full_name': 'Blake',
-        'username': 'blake',
-        'date_of_birth': '1990-01-01',
-        'profile_image': 'https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg',
-        'friends': ['user1'],
-    },
-    'user3': {
-        'full_name': 'Jordan',
-        'username': 'jordanjordanjordan',
-        'date_of_birth': '1990-01-01',
-        'profile_image': 'https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg',
-        'friends': ['user1', 'user4'],
-    },
-    'user4': {
-        'full_name': 'Gemmy',
-        'username': 'gems',
-        'date_of_birth': '1990-01-01',
-        'profile_image': 'https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg',
-        'friends': ['user1', 'user3'],
-    },
-}
-
+rows = run_query(f"SELECT * FROM `{table_name}`")
 
 def get_user_sensor_data(user_id, workout_id):
-    """Returns a list of timestampped information for a given workout.
+    sensor_data_table = "CIS4993.SensorData"
+    sensor_type_table = "CIS4993.SensorTypes"
+    workout_table = "CIS4993.Workouts"
 
-    This function currently returns random data. You will re-write it in Unit 3.
+    query = f"""
+    SELECT sd.WorkoutID, sd.timestamp, sd.SensorValue, st.Name, st.Units
+    FROM `{sensor_data_table}` AS sd
+    JOIN `{sensor_type_table}` AS st
+    ON sd.SensorId = st.SensorId
+    JOIN `{workout_table}` AS w
+    ON sd.WorkoutID = w.WorkoutId
+    WHERE w.UserId = '{user_id}' AND sd.WorkoutID = '{workout_id}'
+    ORDER BY sd.timestamp
     """
-    sensor_data = []
-    sensor_types = [
-        'accelerometer',
-        'gyroscope',
-        'pressure',
-        'temperature',
-        'heart_rate',
-    ]
-    for index in range(random.randint(5, 100)):
-        random_minute = str(random.randint(0, 59))
-        if len(random_minute) == 1:
-            random_minute = '0' + random_minute
-        timestamp = '2024-01-01 00:' + random_minute + ':00'
-        data = random.random() * 100
-        sensor_type = random.choice(sensor_types)
-        sensor_data.append(
-            {'sensor_type': sensor_type, 'timestamp': timestamp, 'data': data}
-        )
-    return sensor_data
+
+    rows = run_query(query)
+
+    # print("Some sensory data:")
+    # for row in rows:
+    #     print(row["SensorValue"])  
+
+    return rows  # Return data for further processing if needed
 
 
-def get_user_workouts(user_id):
-    """Returns a list of user's workouts.
+def get_user_workouts(userid):
+    """Write a good docstring here."""
+    table_name = f"ise-w-genai.CIS4993.Workouts"
+    rows = run_query(f"SELECT * FROM `{table_name}` WHERE userId = '{userid}'")
+    return rows
 
-    This function currently returns random data. You will re-write it in Unit 3.
+def get_recent_workouts(userid):
+    """Write a good docstring here."""
+    table_name = f"ise-w-genai.CIS4993.Workouts"
+    rows = run_query(f"SELECT * FROM `{table_name}` WHERE userId = '{userid}' ORDER BY timestamp DESC LIMIT=3")
+    return rows
+
+def get_genai_advice(userid):
     """
-    workouts = []
-    for index in range(random.randint(1, 3)):
-        random_lat_lng_1 = (
-            1 + random.randint(0, 100) / 100,
-            4 + random.randint(0, 100) / 100,
-        )
-        random_lat_lng_2 = (
-            1 + random.randint(0, 100) / 100,
-            4 + random.randint(0, 100) / 100,
-        )
-        workouts.append({
-            'workout_id': f'workout{index}',
-            'start_timestamp': '2024-01-01 00:00:00',
-            'end_timestamp': '2024-01-01 00:30:00',
-            'start_lat_lng': random_lat_lng_1,
-            'end_lat_lng': random_lat_lng_2,
-            'distance': random.randint(0, 200) / 10.0,
-            'steps': random.randint(0, 20000),
-            'calories_burned': random.randint(0, 100),
-        })
-    return workouts
+    Generate personalized workout advice for a user using Vertex AI's Gemini model.
+    
+    This function retrieves a user's workout data, extracts the calories burned,
+    and uses the Gemini model to generate customized advice with a timestamp
+    and a motivational image.
+    
+    Args:
+        userid (str): The unique identifier for the user
+        
+    Returns:
+        dict: A dictionary containing three keys:
+            - 'advice': The personalized workout advice text
+            - 'timestamp': Current timestamp when advice was generated
+            - 'image_url': URL to a motivational fitness image from Pexels
+    """
 
+    vertexai.init(location="us-central1")
+    model = GenerativeModel("gemini-1.5-flash-002")
+    workout = get_user_workouts(userid)
+    
+    cals = workout[0].get('CaloriesBurned')
+    prompt = (
+    f"You are a knowledgeable fitness motivator give the user motivation they burnt {cals} please give a sentence not just good job "
+
+
+)
+    
+    
+    response = model.generate_content(prompt)
+    
+    
+    # Parse the response text to extract the components
+    response_text = response.text
+    # Extract advice, timestamp and image URL using string parsing
+    advice_parts = {}
+    
+    
+    advice_parts['advice'] = response_text
+    print(advice_parts['advice'])
+
+        
+    advice_parts['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+
+    advice_parts['image_url'] = "https://picsum.photos/200"
+    
+    return advice_parts
 
 def get_user_profile(user_id):
-    """Returns information about the given user.
-
-    This function currently returns random data. You will re-write it in Unit 3.
     """
-    if user_id not in users:
-        raise ValueError(f'User {user_id} not found.')
-    return users[user_id]
+    Retrieve profile information for a specific user.
+    
+    This function queries the database for user profile data and returns
+    a dictionary containing personal information and social connections.
+    
+    Args:
+        user_id (str): The unique identifier for the user
+        
+    Returns:
+        dict: A dictionary containing user profile information with the keys:
+            - 'full_name': The user's full name
+            - 'username': The user's username
+            - 'date_of_birth': The user's date of birth
+            - 'profile_image': URL to the user's profile image
+            - 'friends': A list of user IDs representing the user's friends
+    """
+    table_name = f"ise-w-genai.CIS4993.Users"
+    user_data = run_query(f"SELECT * FROM `{table_name}` WHERE UserId = '{user_id}'")
+    
+    if not user_data:
+        return None
+    
+    # Get the friends list from the Friends table
+    friends_table = f"ise-w-genai.CIS4993.Friends"
+    friends_data = run_query(f"SELECT UserId2 FROM `{friends_table}` WHERE UserId1 = '{user_id}'")
+    
+    # Extract friend IDs into a list
+    friends_list = [friend['UserId2'] for friend in friends_data]
+    
+    # Construct the profile dictionary
+    profile = {
+        'full_name': user_data[0].get('Name', ''),  # Changed to match output requirement
+        'username': user_data[0].get('Username', ''),
+        'date_of_birth': user_data[0].get('DateOfBirth', ''),
+        'profile_image': user_data[0].get('ImageUrl', ''),
+        'friends': friends_list
+    }
+    
+    return profile
 
 
 def get_user_posts(user_id):
-    """Returns a list of a user's posts.
-
-    This function currently returns random data. You will re-write it in Unit 3.
-    """
-    content = random.choice([
-        'Had a great workout today!',
-        'The AI really motivated me to push myself further, I ran 10 miles!',
-    ])
-    return [{
-        'user_id': user_id,
-        'post_id': 'post1',
-        'timestamp': '2024-01-01 00:00:00',
-        'content': content,
-        'image': 'image_url',
-    }]
+    table_name = f"ise-w-genai.CIS4993.Posts"
+    posts = run_query(f"SELECT * FROM `{table_name}` WHERE AuthorId = '{user_id}' ORDER BY timestamp DESC")
+    return posts
 
 
-def get_genai_advice(user_id):
-    """Returns the most recent advice from the genai model.
+def get_friends_post(author_ids):
+    table_name = f"ise-w-genai.CIS4993.Posts"
+    formatted_ids = ", ".join(f"'{author_id}'" for author_id in author_ids)
+    posts = run_query(f"SELECT * FROM `{table_name}` WHERE AuthorId IN ({formatted_ids}) ORDER BY timestamp DESC LIMIT 10")
+    return posts
 
-    This function currently returns random data. You will re-write it in Unit 3.
-    """
-    advice = random.choice([
-        'Your heart rate indicates you can push yourself further. You got this!',
-        "You're doing great! Keep up the good work.",
-        'You worked hard yesterday, take it easy today.',
-        'You have burned 100 calories so far today!',
-    ])
-    image = random.choice([
-        'https://plus.unsplash.com/premium_photo-1669048780129-051d670fa2d1?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        None,
-    ])
-    return {
-        'advice_id': 'advice1',
-        'timestamp': '2024-01-01 00:00:00',
-        'content': advice,
-        'image': image,
-    }
+def insert_post(author_id, content, image_url):
+    table_name = f"ise-w-genai.CIS4993.Posts"
+    query = run_query(f"INSERT INTO `{table_name}` (AuthorId, Content, ImageUrl) VALUES ('{author_id}', '{content}', '{image_url}')")
+
+
+
 
