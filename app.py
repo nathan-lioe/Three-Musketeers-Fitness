@@ -123,10 +123,13 @@ with tab3:
         st.image("https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg", width=400)
     
     with col2:
+        up = user_profile.get('Name')
+        user = user_profile.get("Username")
+        dob = user_profile.get("Date of Birth")
         st.markdown("### Personal Information")
-        st.write(f"**Name:** {user_profile.get("Name")}")
-        st.write(f"**Username:** {user_profile.get("Username")}")
-        st.write(f"**Date of Birth** {user_profile.get("Date of Birth")}")
+        st.write(f"**Name:** {up}")
+        st.write(f"**Username:** {user}")
+        st.write(f"**Date of Birth** {dob}")
 
 
     

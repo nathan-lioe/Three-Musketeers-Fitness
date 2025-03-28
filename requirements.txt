@@ -1,7 +1,9 @@
-streamlit
+streamlit == 1.41.1
 pandas
 numpy
 google-cloud-bigquery
 google-auth
 python-dotenv
-streamlit-extras
+datetime
+vertexai
+

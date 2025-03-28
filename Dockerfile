@@ -9,9 +9,12 @@ WORKDIR /app
 
 # Copy the directory contents into the container
 COPY . ./
-
+# Update to your credential NAME
+ENV GOOGLE_APPLICATION_CREDENTIALS="[YOUR JSON PATH]""
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
 
 # The main command to run when the container starts.
 ENTRYPOINT ["streamlit", "run", "app.py"]
+
+

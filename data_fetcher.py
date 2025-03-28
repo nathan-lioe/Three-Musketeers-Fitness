@@ -4,10 +4,8 @@ import vertexai
 from vertexai.generative_models import GenerativeModel 
 from datetime import datetime
 
-
-
 # Create API client
-client = bigquery.Client()
+client = bigquery.Client(os.getenv("PROJECT_ID"))
 table_name = f"ise-w-genai.CIS4993.Workouts"
 
 # Perform query
