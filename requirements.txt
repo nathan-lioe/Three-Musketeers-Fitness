@@ -6,4 +6,5 @@ google-auth
 python-dotenv
 datetime
 vertexai
+google-cloud-aiplatform
 

@@ -85,7 +85,7 @@ st.markdown("""
 userId = 'user1'
 
 # Create a horizontal navigation menu with st.tabs
-tab1, tab2, tab3 = st.tabs(["Activity", "Community", "Profile"])
+tab1, tab2, tab3, tab4 = st.tabs(["Activity", "Community", "Profile", "Leaderboard and Challenges"])
 
 # Home tab
 with tab1:
