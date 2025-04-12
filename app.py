@@ -1,6 +1,6 @@
 import streamlit as st
 from modules import display_post, display_genai_advice, display_activity_summary, display_recent_workouts
-from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts, get_genai_advice, authenticate_user, register_user
+from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts, get_genai_advice, authenticate_user, register_user, get_challenges
 from community import show_posts
 from activity import display
 import datetime
@@ -146,9 +146,28 @@ with tab3:
         st.write(f"**Name:** {user_profile['Name']}")
         st.write(f"**Username:** {user_profile['Username']}")
         st.write(f"**Date of Birth:** {user_profile['Date of Birth']}")
-
+        
         # Logout Button
         st.markdown("---")
         if st.button("Logout Your Account"):
             st.session_state.user_id = None
             st.rerun()
+with tab4:
+    st.title("Leaderboard and Challenges")
+    st.markdown("Weekly Challenges")
+    challenges = get_challenges()
+    
+    for challenge in challenges:
+        with st.container():
+            st.subheader(challenge["challenge_name"])
+            st.write(challenge["challenge_description"])
+            # Convert ID to a string for use as a Streamlit key
+            challenge_id_str = str(challenge["challenge_id"])
+            if st.button(f"View Challenge: {challenge['challenge_name']}", key=challenge_id_str):
+                st.session_state["selected_challenge"] = {
+                    "id": challenge_id_str,
+                    "name": challenge["challenge_name"],
+                    "description": challenge["challenge_description"]
+                }
+
+                st.switch_page("pages/challenge_details.py")
