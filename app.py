@@ -3,8 +3,9 @@ from modules import display_post, display_genai_advice, display_activity_summary
 from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts,  get_genai_advice, authenticate_user, register_user, get_challenges, get_challenge_details
 from community import show_posts
 from activity import display
-import datetime
+from challenge import render_challenge_details
 from leader import show_leaderboard
+import datetime
 
 # Streamlit setup
 st.set_page_config(layout="wide", page_title="Three Musketeers App")
@@ -67,6 +68,10 @@ st.markdown("""
 if 'user_id' not in st.session_state:
     st.session_state.user_id = None
 
+if "page" not in st.session_state:
+    st.session_state["page"] = "home"
+
+
 # --- Logout check and reset before anything else ---
 if st.session_state.user_id is None:
     auth_tab, reg_tab = st.tabs(["🔐 Login", "📝 Register"])
@@ -104,7 +109,11 @@ if st.session_state.user_id is None:
 
 # --- If logged in, render main app ---
 userId = st.session_state.user_id
-tab1, tab2, tab3, tab4 = st.tabs(["Activity", "Community", "Profile", "Leaderboard and Challenges"])
+tab1, tab2, tab3, tab4 = st.tabs(["Activity", "Community","Leaderboard and Challenges" ,"Profile"])
+
+if st.session_state["page"] == "challenge_details":
+    render_challenge_details(st.session_state.get("selected_challenge"))
+    st.stop()
 
 with tab1:
     st.header("Activity Summary")
