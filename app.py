@@ -7,7 +7,7 @@
 
 import streamlit as st
 from modules import display_post, display_genai_advice, display_activity_summary, display_recent_workouts
-from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts,get_genai_advice
+from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts,get_genai_advice, get_challenges
 from community import show_posts
 from activity import display
 import pandas as pd
@@ -130,6 +130,27 @@ with tab3:
         st.write(f"**Name:** {up}")
         st.write(f"**Username:** {user}")
         st.write(f"**Date of Birth** {dob}")
+
+with tab4:
+    st.title("Leaderboard and Challenges")
+    st.markdown("Weekly Challenges")
+    challenges = get_challenges()
+    
+    for challenge in challenges:
+        with st.container():
+            st.subheader(challenge["challenge_name"])
+            st.write(challenge["challenge_description"])
+            # Convert ID to a string for use as a Streamlit key
+            challenge_id_str = str(challenge["challenge_id"])
+            if st.button(f"View Challenge: {challenge['challenge_name']}", key=challenge_id_str):
+                st.session_state["selected_challenge"] = {
+                    "id": challenge_id_str,
+                    "name": challenge["challenge_name"],
+                    "description": challenge["challenge_description"]
+                }
+
+                st.switch_page("pages/challenge_details.py")
+
 
 
     

@@ -125,6 +125,17 @@ def get_friends_post(author_ids):
 
 def insert_post(postId,author_id, timestamp, content, image_url):
     table_name = get_table_name("Posts")
-    #This is not a select query, so it should not be run_query
     query = f"INSERT INTO `{table_name}` (PostId,AuthorId,Timestamp, Content, ImageUrl) VALUES ('{postId}','{author_id}','{timestamp}', '{content}', '{image_url}')"
     client.query(query).result()
+
+def get_challenges():
+    table_name = get_table_name("Challenges")
+    challenges = run_query(f"SELECT * FROM `{table_name}`")
+    return challenges
+
+def get_challenge_details(challenge_id):
+    table_name = get_table_name("ChallengeSteps")
+    challenge_steps = run_query(f"SELECT * FROM `{table_name}` WHERE challenge_id = {challenge_id} ORDER BY step_number ASC")
+    return challenge_steps
+    
+    
