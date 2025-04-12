@@ -1,14 +1,9 @@
-#############################################################################
-# app.py
-#
-# Unified entrypoint for the Three Musketeers App — no sidebar, no pages/
-#############################################################################
-
 import streamlit as st
 from modules import display_post, display_genai_advice, display_activity_summary, display_recent_workouts
-from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts, get_genai_advice, get_challenges, get_challenge_details
+from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts,  get_genai_advice, authenticate_user, register_user, get_challenges, get_challenge_details
 from community import show_posts
 from activity import display
+import datetime
 from leader import show_leaderboard
 
 # Streamlit setup
@@ -69,43 +64,51 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Simulate user ID
-userId = 'user1'
+if 'user_id' not in st.session_state:
+    st.session_state.user_id = None
 
-# Routing state
-if "page" not in st.session_state:
-    st.session_state["page"] = "home"
+# --- Logout check and reset before anything else ---
+if st.session_state.user_id is None:
+    auth_tab, reg_tab = st.tabs(["🔐 Login", "📝 Register"])
 
-# --------------------- Challenge Details View ---------------------
-if st.session_state["page"] == "challenge_details":
-    selected_challenge = st.session_state.get("selected_challenge")
+    with auth_tab:
+        st.subheader("Login")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        if st.button("Login"):
+            user = authenticate_user(username, password)
+            if user:
+                st.session_state.user_id = user["UserId"]
+                st.rerun()
+            else:
+                st.error("Invalid username or password")
 
-    if not selected_challenge:
-        st.warning("No challenge selected. Please go back and choose a challenge.")
-        st.stop()
+    with reg_tab:
+        st.subheader("Create an Account")
+        full_name = st.text_input("Full Name")
+        reg_username = st.text_input("New Username")
+        reg_password = st.text_input("New Password", type="password")
+        dob = st.date_input(
+        "Date of Birth",
+        min_value=datetime.date(1900, 1, 1),
+        max_value=datetime.date(2025, 12, 30))
 
-    st.title(selected_challenge["name"])
-    st.markdown(f"**Description:** {selected_challenge['description']}")
-    st.markdown("### Challenge Days:")
+        if st.button("Register"):
+            default_img = "https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg"
+            user_id = register_user(full_name, reg_username, dob.isoformat(), default_img, reg_password)
+            st.success("Account created! You are now logged in.")
+            st.session_state.user_id = user_id
+            st.rerun()
 
-    challenge_steps = get_challenge_details(selected_challenge["id"])
+    st.stop()
 
-    for step in challenge_steps:
-        with st.expander(f"Day {step['step_number']}: {step['step_name']}"):
-            st.write(step["step_description"])
+# --- If logged in, render main app ---
+userId = st.session_state.user_id
+tab1, tab2, tab3, tab4 = st.tabs(["Activity", "Community", "Profile", "Leaderboard and Challenges"])
 
-    if st.button("🔙 Back to Challenges"):
-        st.session_state["page"] = "home"
-        st.rerun()
-
-# --------------------- Main Tabs (when not in detail view) ---------------------
-else:
-    tab1, tab2, tab3, tab4 = st.tabs(["Activity", "Community","Leaderboard and Challenges" ,"Profile", ])
-
-    # Activity Tab
-    with tab1:
-        st.header("Activity Summary")
-        display(userId)
+with tab1:
+    st.header("Activity Summary")
+    display(userId)
 
     # Community Tab
     with tab2:

@@ -7,6 +7,10 @@
 # function other than the example.
 #############################################################################
 from internals import create_component
+import pydeck as pdk
+import streamlit as st
+import pandas as pd
+import numpy as np
 
 def display_activity_summary(workouts_list):
     """Write a good docstring here."""
@@ -86,26 +90,85 @@ def format_time(timestamp):
     # If it's a string
     return timestamp[11:19]  # Limiting to HH:MM:SS format
 
+def display_map_for_workout(start_lat, start_lng, end_lat, end_lng):
+    # Create detailed point data
+    point_data = pd.DataFrame([
+        {
+            "lat": start_lat,
+            "lon": start_lng,
+            "label": "Start",
+            "tooltip_text": f"Start of Workout::\n({start_lat:.4f}, {start_lng:.4f})"
+        },
+        {
+            "lat": end_lat,
+            "lon": end_lng,
+            "label": "End",
+            "tooltip_text": f"End of Workout:\n({end_lat:.4f}, {end_lng:.4f})"
+        }
+    ])
+
+    # Point markers (start & end)
+    layer_points = pdk.Layer(
+        "ScatterplotLayer",
+        data=point_data,
+        get_position='[lon, lat]',
+        get_color='[200, 30, 0, 160]',
+        get_radius=50,
+        pickable=True  # Required for tooltips
+    )
+
+    # Line connecting start and end
+    layer_line = pdk.Layer(
+        "LineLayer",
+        data=pd.DataFrame([{
+            "start": [start_lng, start_lat],
+            "end": [end_lng, end_lat]
+        }]),
+        get_source_position="start",
+        get_target_position="end",
+        get_color='[0, 100, 255]',
+        get_width=3
+    )
+
+    # Center view between start and end
+    midpoint = [(start_lat + end_lat) / 2, (start_lng + end_lng) / 2]
+
+    view_state = pdk.ViewState(
+        latitude=midpoint[0],
+        longitude=midpoint[1],
+        zoom=12,
+        pitch=0
+    )
+
+    # Display the map with full tooltip info
+    r = pdk.Deck(
+        layers=[layer_points, layer_line],
+        initial_view_state=view_state,
+        tooltip={"text": "{tooltip_text}"}
+    )
+
+    st.pydeck_chart(r)
+
 
 
 def display_recent_workouts(workout):
     """
     Format a single workout record and create a component to display it.
-    
+
     Args:
         workout: A dictionary containing workout data
     """
     w_ID = workout.get('WorkoutId', 0)
-    
+
     # Get the timestamp values
     start_timestamp = workout.get('StartTimestamp', "")
     end_timestamp = workout.get('EndTimestamp', "")
-    
+
     # Format date and time separately
     date = start_timestamp
     start_time = format_time(start_timestamp)
     end_time = format_time(end_timestamp)
-    
+
     start_lat = workout.get('StartLocationLat', 0)
     end_lat = workout.get('EndLocationLat', 0)
     start_lng = workout.get('StartLocationLong', 0)
@@ -113,11 +176,11 @@ def display_recent_workouts(workout):
     distance = workout.get('TotalDistance', 0)
     steps = workout.get('TotalSteps', 0)
     calories = workout.get('CaloriesBurned', 0)
-          
+
     workout_data = {
         'WORKOUT_ID': w_ID,
-        'DATE': date, 
-        'START_TIME': start_time,  
+        'DATE': date,
+        'START_TIME': start_time,
         'END_TIME': end_time,
         'START_LAT': start_lat,
         'START_LNG': start_lng,
@@ -127,9 +190,13 @@ def display_recent_workouts(workout):
         'STEPS': steps,
         'CALORIES_BURNED': calories
     }
-    
+
     create_component(workout_data, "recent_workouts", height=400)
-    
+
+    #map in expander
+    with st.expander(f"Map of distance trecked for {w_ID}"):
+        display_map_for_workout(start_lat, start_lng, end_lat, end_lng)
+
 
 
 def display_genai_advice(timestamp, advice, image):
