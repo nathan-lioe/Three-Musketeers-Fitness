@@ -5,3 +5,7 @@ google-cloud-bigquery
 google-auth
 python-dotenv
 streamlit-extras
+streamlit-lottie
+google-cloud-aiplatform
+vertexai
+spotipy

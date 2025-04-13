@@ -62,7 +62,7 @@ def display_activity_summary(workouts_list):
         steps.append(x_steps)
     
     data = {
-        'TOTAL_DISTANCE' : total_distance,
+        'TOTAL_DISTANCE' : round(total_distance,1),
         'TOTAL_MINUTES' : total_minutes,
         'TOTAL_CALORIES': total_calories,
         'TOTAL_STEPS' : total_steps,

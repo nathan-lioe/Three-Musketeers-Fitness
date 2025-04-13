@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 # Create API client
-client = bigquery.Client()
+client = bigquery.Client(project="ise-w-genai-451515")
 table_name = f"ise-w-genai.CIS4993.Workouts"
 
 # Perform query
@@ -74,7 +74,7 @@ def get_genai_advice(userid):
             - 'image_url': URL to a motivational fitness image from Pexels
     """
 
-    vertexai.init(location="us-central1")
+    vertexai.init(project="ise-w-genai-451515", location="us-central1")
     model = GenerativeModel("gemini-1.5-flash-002")
     workout = get_user_workouts(userid)
     

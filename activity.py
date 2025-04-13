@@ -38,4 +38,9 @@ def display(userId):
     if st.button("Share steps with community!"):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         post_id = f"{userId}_{int(datetime.timestamp(datetime.now()))}"
-        insert_post(post_id,userId,timestamp, content, "test")
+        # Attempt to insert the post and capture the result
+        try:
+            insert_post(post_id, userId, timestamp, content, "test")
+            st.success("Steps shared successfully with the community!")
+        except Exception as e:
+            st.error(f"Failed to share steps. An error occurred: {e}")
