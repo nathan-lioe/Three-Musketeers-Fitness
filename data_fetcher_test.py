@@ -80,7 +80,7 @@ class TestDataFetcher(unittest.TestCase):
         # Assert
         mock_run_query.assert_called_once()
         query = mock_run_query.call_args[0][0]
-        self.assertIn("FROM `CIS4993.Workouts`", query)
+        self.assertIn("FROM `ise-w-genai.CIS4993.Workouts`", query)
         self.assertIn("WHERE UserId = 'user1'", query)
         self.assertIn("ORDER BY StartTimeStamp DESC", query)
         self.assertEqual(result, [
@@ -103,7 +103,7 @@ class TestDataFetcher(unittest.TestCase):
         # Assert
         mock_run_query.assert_called_once()
         query = mock_run_query.call_args[0][0]
-        self.assertIn("FROM `CIS4993.Users`", query)
+        self.assertIn("FROM `ise-w-genai.CIS4993.Users`", query)
         self.assertIn("WHERE UserId = 'user1'", query)
         self.assertEqual(result, {'UserId': 'user1', 'Name': 'Test User', 'Username': 'testuser', 'DateOfBirth': '1990-01-01', 'ImageUrl': 'http://test.com/image.jpg'})
 
@@ -120,7 +120,7 @@ class TestDataFetcher(unittest.TestCase):
         # Assert
         mock_run_query.assert_called_once()
         query = mock_run_query.call_args[0][0]
-        self.assertIn("FROM `CIS4993.Users`", query)
+        self.assertIn("FROM `ise-w-genai.CIS4993.Users`", query)
         self.assertIn("WHERE UserId = 'nonexistentuser'", query)
         self.assertIsNone(result)
         
@@ -140,7 +140,7 @@ class TestDataFetcher(unittest.TestCase):
         # Assert
         mock_run_query.assert_called_once()
         query = mock_run_query.call_args[0][0]
-        self.assertIn("FROM `CIS4993.Posts`", query)
+        self.assertIn("FROM `ise-w-genai.CIS4993.Posts`", query)
         self.assertIn("WHERE AuthorId = 'user1'", query)
         self.assertIn("ORDER BY Timestamp DESC", query)
         self.assertEqual(result, [

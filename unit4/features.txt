@@ -1,0 +1,17 @@
+﻿1. Leader_Challenges.py: Create and structure page for Leaderboard and Challenges.
+2. Challenges.html: Create individual challenge template:
+3. Modules.py -> Display_Challenge(): 
+   * Input -> Dictionary with Challenge information(content, title, individual challenge array) Individual challenge array contains (distance, calories, content, title)
+   * Output: None
+4. Leader.html: Create Leaderboard template
+5. Modules.py -> Show_leader_board() Implement Leaderboard template
+   * Input -> combined steps, calories, challenges completed, user profile
+   * Output -> None
+6. music.py : Implement music page
+7. Data_fetcher.py -> music_mood():
+   * Input: Users mood and workout information(calories, steps)
+   * Output: Spotify Playlist
+8. Modules.py -> Display_music_mood():
+   * Input: Input: Users mood and workout information(calories, steps)
+   * Output: None
+9. Whole app: Enhance navigation
