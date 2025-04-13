@@ -42,6 +42,7 @@ jobs:
         python -m pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+
     - name: Authenticate with Google Cloud
       run: |
         echo "${{ secrets.GOOGLE_CREDENTIALS }}" > $HOME/gcloud.json
