@@ -9,6 +9,4 @@ vertexai
 google-cloud-aiplatform
 datetime
 streamlit-lottie
-google-cloud-aiplatform
-vertexai
 spotipy

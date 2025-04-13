@@ -45,7 +45,7 @@ def get_speed_category(speed):
 def embed_spotify_player(playlist_id):
     spotify_url = f"https://open.spotify.com/embed/playlist/{playlist_id}"
     st.markdown(
-        f'<iframe src="{spotify_url}" width="300" height="380" '
+        f'<iframe src="{spotify_url}" width="500" height="380" '
         f'frameBorder="0" allow="encrypted-media" '
         f'style="border-radius: 10px;"></iframe>',
         unsafe_allow_html=True
