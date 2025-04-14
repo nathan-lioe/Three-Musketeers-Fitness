@@ -7,7 +7,7 @@ import re
 import streamlit as st
 
 # Initialize Vertex AI
-vertexai.init(project="ise-w-genai-451515", location="us-central1")
+vertexai.init(project="genial-venture-454302-f9", location="us-central1")
 model = GenerativeModel("gemini-1.5-flash-002")
 
 # Set up Spotify client

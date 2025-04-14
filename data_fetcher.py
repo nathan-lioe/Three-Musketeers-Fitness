@@ -78,7 +78,7 @@ def get_recent_workouts(userid):
     return run_query(f"SELECT * FROM `{table_name}` WHERE userId = '{userid}' ORDER BY timestamp DESC LIMIT 3")
 
 def get_genai_advice(userid):
-    vertexai.init(location="us-central1")
+    vertexai.init(project=PROJECT_ID)
     model = GenerativeModel("gemini-1.5-flash-002")
     workout = get_user_workouts(userid)
     if not workout:
