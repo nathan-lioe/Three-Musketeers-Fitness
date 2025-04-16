@@ -147,5 +147,10 @@ def get_challenge_details(challenge_id):
     table_name = get_table_name("ChallengeSteps")
     challenge_steps = run_query(f"SELECT * FROM `{table_name}` WHERE challenge_id = {challenge_id} ORDER BY step_number ASC")
     return challenge_steps
-    
+
+def get_all_users():
+    table_name = get_table_name("Users")
+    return run_query(f"SELECT UserId, Name, Username, ImageUrl FROM `{table_name}` WHERE LENGTH(UserId) <= 6")
+
+
     

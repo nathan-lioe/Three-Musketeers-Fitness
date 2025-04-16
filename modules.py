@@ -219,3 +219,16 @@ def display_post(username, user_image, timestamp, content, post_image):
     }
     html_file_name = "display_post"
     create_component(data, html_file_name, 600)
+
+def display_leaderboard(rank, picture, name, combined, steps, cals):
+    data = {
+        'rank' : rank,
+        'picture' : picture,
+        'name' : name,
+        'combined' : combined,
+        'steps' : steps,
+        'cals' : cals
+    }
+    html_file_name = "leader_component"
+    create_component(data, html_file_name, 160)
+    
