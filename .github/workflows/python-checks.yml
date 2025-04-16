@@ -44,9 +44,9 @@ jobs:
 
 
     - name: Authenticate with Google Cloud
-    run: |
-      printf "%s" "${{ secrets.GOOGLE_CREDENTIALS }}" > $HOME/gcloud.json
-      echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json" >> $GITHUB_ENV
+      run: |
+        printf "%s" "${{ secrets.GOOGLE_CREDENTIALS }}" > $HOME/gcloud.json
+        echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json" >> $GITHUB_ENV
 
         
     - name: Test with pytest
