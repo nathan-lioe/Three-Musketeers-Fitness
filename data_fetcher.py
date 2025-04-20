@@ -25,17 +25,48 @@ def authenticate_user(username, password):
     results = run_query(query)
     return results[0] if results else None
 
-def register_user(name, username, dob, image_url, password):
-    table_name = get_table_name("Users")
-    user_id = f"user{np.random.randint(1000, 9999)}"
-    password_hash = hash_password(password)
 
-    query = f"""
-    INSERT INTO `{table_name}` (UserId, Name, Username, ImageUrl, DateOfBirth, PasswordHash)
-    VALUES ('{user_id}', '{name}', '{username}', '{image_url}', '{dob}', '{password_hash}')
+def register_user(full_name, username, dob, image_url, password):
+    client = bigquery.Client()
+    table_id = f"{PROJECT_ID}.{DATASET_ID}.Users"
+
+    # Check if username already exists
+    check_query = f"SELECT Username FROM `{table_id}` WHERE Username = '{username}'"
+    existing = client.query(check_query).result()
+    if existing.total_rows > 0:
+        raise ValueError(f"Username '{username}' is already taken.")
+
+    # Get all current UserIds
+    query = f"SELECT UserId FROM `{table_id}`"
+    results = client.query(query).result()
+    user_ids = [row.UserId for row in results]
+
+    # Extract numeric parts of user IDs
+    numeric_ids = []
+    for uid in user_ids:
+        try:
+            numeric_ids.append(int(uid.replace("user", "")))
+        except:
+            continue
+
+    next_id = max(numeric_ids) + 1 if numeric_ids else 1
+    new_user_id = f"user{next_id}"
+
+    # Insert new user
+    insert_query = f"""
+    INSERT INTO `{table_id}` (UserId, Name, Username, ImageUrl, DateOfBirth, PasswordHash)
+    VALUES (
+        '{new_user_id}',
+        '{full_name}',
+        '{username}',
+        '{image_url}',
+        '{dob}',
+        '{hash_password(password)}'
+    )
     """
-    client.query(query).result()
-    return user_id
+    client.query(insert_query).result()
+    return new_user_id
+
 
 def update_profile_image(user_id, new_url):
     table = get_table_name("Users")
@@ -118,11 +149,9 @@ def get_user_posts(user_id):
 
 def get_friends_post(author_ids):
     table_name = get_table_name("Posts")
-    
-    if not author_ids:  # No friends
-        return []  # Return empty list instead of invalid SQL
-
-    formatted_ids = ", ".join(f"'{author_id}'" for author_id in author_ids)
+    if not author_ids:
+        return []
+    formatted_ids = ", ".join(f"'{aid}'" for aid in author_ids)
     return run_query(
         f"SELECT * FROM `{table_name}` WHERE AuthorId IN ({formatted_ids}) ORDER BY timestamp DESC LIMIT 10"
     )
@@ -139,18 +168,13 @@ def insert_post(postId, author_id, timestamp, content, image_url):
 @st.cache_data(ttl=300)
 def get_challenges():
     table_name = get_table_name("Challenges")
-    challenges = run_query(f"SELECT * FROM `{table_name}`")
-    return challenges
+    return run_query(f"SELECT * FROM `{table_name}`")
 
 @st.cache_data(ttl=300)
 def get_challenge_details(challenge_id):
     table_name = get_table_name("ChallengeSteps")
-    challenge_steps = run_query(f"SELECT * FROM `{table_name}` WHERE challenge_id = {challenge_id} ORDER BY step_number ASC")
-    return challenge_steps
+    return run_query(f"SELECT * FROM `{table_name}` WHERE challenge_id = {challenge_id} ORDER BY step_number ASC")
 
 def get_all_users():
     table_name = get_table_name("Users")
     return run_query(f"SELECT UserId, Name, Username, ImageUrl FROM `{table_name}` WHERE LENGTH(UserId) <= 6")
-
-
-    
