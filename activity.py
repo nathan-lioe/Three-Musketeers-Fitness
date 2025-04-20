@@ -34,7 +34,11 @@ def display(userId):
     use_container_width=True  # This makes the chart use the full width
         )
 
-    content = f"Look at this, I walked {steps[0]} steps today! #fitness #steps"
+    if steps and len(steps) > 0:
+        content = f"Look at this, I walked {steps[0]} steps today! #fitness #steps"
+    else:
+        content = "No step data available yet. Start moving and come back soon!"
+
     if st.button("Share steps with community!"):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         post_id = f"{userId}_{int(datetime.timestamp(datetime.now()))}"

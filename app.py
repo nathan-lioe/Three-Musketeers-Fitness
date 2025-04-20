@@ -92,22 +92,32 @@ if st.session_state.user_id is None:
             else:
                 st.error("Invalid username or password")
 
-    with reg_tab:
-        st.subheader("Create an Account")
-        full_name = st.text_input("Full Name")
-        reg_username = st.text_input("New Username")
-        reg_password = st.text_input("New Password", type="password")
-        dob = st.date_input(
-        "Date of Birth",
-        min_value=datetime.date(1900, 1, 1),
-        max_value=datetime.date(2025, 12, 30))
+        with reg_tab:
+            st.subheader("Create an Account")
+            full_name    = st.text_input("Full Name")
+            reg_username = st.text_input("New Username")
+            reg_password = st.text_input("New Password", type="password")
+            dob = st.date_input(
+                "Date of Birth",
+                min_value=datetime.date(1900, 1, 1),
+                max_value=datetime.date(2025, 12, 30)
+            )
 
-        if st.button("Register"):
-            default_img = "https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg"
-            user_id = register_user(full_name, reg_username, dob.isoformat(), default_img, reg_password)
-            st.success("Account created! You are now logged in.")
-            st.session_state.user_id = user_id
-            st.rerun()
+            if st.button("Register"):
+                default_img = "https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg"
+                try:
+                    # This will raise ValueError if the username is taken
+                    user_id = register_user(full_name, reg_username, dob.isoformat(), default_img, reg_password)
+                    st.success("Account created! You are now logged in.")
+                    st.session_state.user_id = user_id
+                    st.rerun()
+                except ValueError as e:
+                    # Show the specific “username taken” message
+                    st.error(f"{e} Please choose a different username and try again.")
+                except Exception:
+                    # Fallback for any other error
+                    st.error("Registration failed unexpectedly. Please try again later.")
+
 
     st.stop()
 
@@ -185,7 +195,32 @@ with tab1:
                 st.write(f"**Name:** {user_profile['Name']}")
                 st.write(f"**Username:** {user_profile['Username']}")
                 st.write(f"**Date of Birth:** {user_profile['Date of Birth']}")
-        
+
+                st.markdown("---")
+
+                # Logout Button
+                col_logout, col_switch = st.columns([1, 2])
+                with col_logout:
+                    if st.button("Logout of Account"):
+                        st.session_state.user_id = None
+                        st.session_state.page = "home"
+                        st.success("You have been logged out.")
+                        st.rerun()
+
+                # Demo Switch Dropdown
+                with col_switch:
+                    demo_usernames = {
+                        "Alice Johnson (user1)": "user1",
+                        "Bob Smith (user2)": "user2",
+                        "Charlie Brown (user3)": "user3"
+                    }
+
+                    selected_demo = st.selectbox("Switch Demo Account",list(demo_usernames.keys()))
+                    if st.button("Switch Account"):
+                        st.session_state.user_id = demo_usernames[selected_demo]
+                        st.success(f"Switched to {selected_demo}")
+                        st.rerun()
+
         # --- Music Tab ---
         with tab5:
             st.markdown("""
