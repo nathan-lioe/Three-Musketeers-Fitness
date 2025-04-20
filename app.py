@@ -4,7 +4,7 @@ from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workou
 from community import show_posts
 from activity import display
 from challenge import render_challenge_details
-from leader import show_leaderboard
+from leader import leader_components
 import datetime
 from mood_playlists import get_mood, get_speed_category, embed_spotify_player, get_vertex_playlist, get_vertex_playlist_description, get_ai_spotify_playlist
 from PIL import Image
@@ -123,7 +123,7 @@ if st.session_state.user_id is None:
 
 # --- If logged in, render main app ---
 userId = st.session_state.user_id
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["Activity", "Community", "Leaderboard and Challenges", "Profile", "Music"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Activity", "Community", "Leaderboard and Challenges", "Music" ,"Profile"])
 
 if st.session_state["page"] == "challenge_details":
     render_challenge_details(st.session_state.get("selected_challenge"))
@@ -172,57 +172,13 @@ with tab1:
                                 st.session_state["page"] = "challenge_details"
                                 st.rerun()
             
-            show_leaderboard()
+            # show_leaderboard()
+            leader_components()
             
             
-        # Profile Tab
-        with tab4:
-            st.header("Your Profile")
-            col1, col2 = st.columns([1, 2])
-            profile = get_user_profile(userId)
-            user_profile = {
-                "Name": profile.get("full_name", "Name"),
-                "Username": profile.get("username", "Username"),
-                "Date of Birth": profile.get("date_of_birth", "Date of Birth"),
-                "Profile_Image": profile.get("profile_image", "https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg")
-            }
-
-            with col1:
-                st.image(user_profile["Profile_Image"], width=400)
-
-            with col2:
-                st.markdown("### Personal Information")
-                st.write(f"**Name:** {user_profile['Name']}")
-                st.write(f"**Username:** {user_profile['Username']}")
-                st.write(f"**Date of Birth:** {user_profile['Date of Birth']}")
-
-                st.markdown("---")
-
-                # Logout Button
-                col_logout, col_switch = st.columns([1, 2])
-                with col_logout:
-                    if st.button("Logout of Account"):
-                        st.session_state.user_id = None
-                        st.session_state.page = "home"
-                        st.success("You have been logged out.")
-                        st.rerun()
-
-                # Demo Switch Dropdown
-                with col_switch:
-                    demo_usernames = {
-                        "Alice Johnson (user1)": "user1",
-                        "Bob Smith (user2)": "user2",
-                        "Charlie Brown (user3)": "user3"
-                    }
-
-                    selected_demo = st.selectbox("Switch Demo Account",list(demo_usernames.keys()))
-                    if st.button("Switch Account"):
-                        st.session_state.user_id = demo_usernames[selected_demo]
-                        st.success(f"Switched to {selected_demo}")
-                        st.rerun()
-
+  
         # --- Music Tab ---
-        with tab5:
+        with tab4:
             st.markdown("""
                 <style>
                 .title-text {
@@ -308,5 +264,51 @@ with tab1:
                     ai_playlist = get_vertex_playlist(mood, speed_category)
                     st.markdown("### 🧠 AI-Generated Song Recommendations")
                     st.markdown(ai_playlist)
+        
+        # Profile Tab
+        with tab5:
+            st.header("Your Profile")
+            col1, col2 = st.columns([1, 2])
+            profile = get_user_profile(userId)
+            user_profile = {
+                "Name": profile.get("full_name", "Name"),
+                "Username": profile.get("username", "Username"),
+                "Date of Birth": profile.get("date_of_birth", "Date of Birth"),
+                "Profile_Image": profile.get("profile_image", "https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg")
+            }
+
+            with col1:
+                st.image(user_profile["Profile_Image"], width=400)
+
+            with col2:
+                st.markdown("### Personal Information")
+                st.write(f"**Name:** {user_profile['Name']}")
+                st.write(f"**Username:** {user_profile['Username']}")
+                st.write(f"**Date of Birth:** {user_profile['Date of Birth']}")
+
+                st.markdown("---")
+
+                # Logout Button
+                col_logout, col_switch = st.columns([1, 2])
+                with col_logout:
+                    if st.button("Logout of Account"):
+                        st.session_state.user_id = None
+                        st.session_state.page = "home"
+                        st.success("You have been logged out.")
+                        st.rerun()
+
+                # Demo Switch Dropdown
+                with col_switch:
+                    demo_usernames = {
+                        "Alice Johnson (user1)": "user1",
+                        "Bob Smith (user2)": "user2",
+                        "Charlie Brown (user3)": "user3"
+                    }
+
+                    selected_demo = st.selectbox("Switch Demo Account",list(demo_usernames.keys()))
+                    if st.button("Switch Account"):
+                        st.session_state.user_id = demo_usernames[selected_demo]
+                        st.success(f"Switched to {selected_demo}")
+                        st.rerun()
 
         
