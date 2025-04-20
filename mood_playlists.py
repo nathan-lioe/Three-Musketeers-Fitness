@@ -35,11 +35,11 @@ def get_mood(selected_mood=None):
 # Determine speed category based on speed input
 def get_speed_category(speed):
     if speed < 4:
-        return "slow"
+        return "low"
     elif speed < 8:
         return "medium"
     else:
-        return "fast"
+        return "high"
 
 # Embed Spotify playlist
 def embed_spotify_player(playlist_id):
@@ -131,24 +131,24 @@ def get_ai_spotify_playlist(mood, speed_category):
         # Predefined sample playlist IDs based on mood and speed
         sample_playlists = {
             "happy": {
-                "slow": "37i9dQZF1DX6VdMW310YC7",
+                "low": "37i9dQZF1DX6VdMW310YC7",
                 "medium": "37i9dQZF1DXdPec7aLTmlC",
-                "fast": "37i9dQZF1DWZgauS5j6pMv"
+                "high": "37i9dQZF1DWZgauS5j6pMv"
             },
             "sad": {
-                "slow": "37i9dQZF1DX7qK8ma5wgG1",
+                "low": "37i9dQZF1DX7qK8ma5wgG1",
                 "medium": "37i9dQZF1DWVrtsSlLKzro",
-                "fast": "37i9dQZF1DWT0dFWGMR4tI"
+                "high": "37i9dQZF1DWZUAeYvs88zc"
             },
             "relaxed": {
-                "slow": "37i9dQZF1DX8Uebhn9wzrS",
+                "low": "37i9dQZF1DX8Uebhn9wzrS",
                 "medium": "37i9dQZF1DX4WYpdgoIcn6",
-                "fast": "37i9dQZF1DX9uKNf5jGX6m"
+                "high": "37i9dQZF1DX9uKNf5jGX6m"
             },
             "energetic": {
-                "slow": "37i9dQZF1DX0hWmn8d5pRe",
+                "low": "37i9dQZF1DX0hWmn8d5pRe",
                 "medium": "37i9dQZF1DX76Wlfdnj7AP",
-                "fast": "37i9dQZF1DX4eRPd9frC1m"
+                "high": "37i9dQZF1DX4eRPd9frC1m"
             }
         }
 
