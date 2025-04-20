@@ -134,7 +134,12 @@ def insert_post(postId, author_id, timestamp, content, image_url):
     INSERT INTO `{table_name}` (PostId, AuthorId, Timestamp, Content, ImageUrl)
     VALUES ('{postId}', '{author_id}', '{timestamp}', '{content}', '{image_url}')
     """
-    client.query(query).result()
+    try:
+        client.query(query).result()
+        return True
+    except Exception as e:
+        print(f"Insert error: {e}")
+        return False
 
 @st.cache_data(ttl=300)
 def get_challenges():

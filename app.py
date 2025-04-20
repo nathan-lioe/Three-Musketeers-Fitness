@@ -4,7 +4,7 @@ from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workou
 from community import show_posts
 from activity import display
 from challenge import render_challenge_details
-from leader import leader_components
+from leader import show_leaderboard
 import datetime
 from mood_playlists import get_mood, get_speed_category, embed_spotify_player, get_vertex_playlist, get_vertex_playlist_description, get_ai_spotify_playlist
 from PIL import Image
@@ -162,7 +162,7 @@ with tab1:
                                 st.session_state["page"] = "challenge_details"
                                 st.rerun()
             
-            leader_components()
+            show_leaderboard()
             
             
         # Profile Tab
