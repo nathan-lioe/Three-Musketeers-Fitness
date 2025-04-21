@@ -299,14 +299,17 @@ with tab1:
             
                     # Display the playlist ID (for debugging/transparency)
                     st.caption(f"Using Spotify playlist ID: {spotify_playlist_id}")
-            
-                    # Embed the Spotify player
-                    st.markdown("### 🎧 Your AI-Selected Spotify Playlist")
-                    embed_spotify_player(spotify_playlist_id)
-            
-                    # Generate AI custom playlist of songs
-                    ai_playlist = get_vertex_playlist(mood, speed_category)
-                    st.markdown("### 🧠 AI-Generated Song Recommendations")
-                    st.markdown(ai_playlist)
+
+                    # Two columns: Left for Spotify, Right for AI-generated playlist
+                    col_left, col_right = st.columns(2)
+
+                    with col_left:
+                        st.markdown("### 🎧 Your AI-Selected Spotify Playlist")
+                        embed_spotify_player(spotify_playlist_id)
+
+                    with col_right:
+                        st.markdown("### 🧠 AI-Generated Song Recommendations")
+                        ai_playlist = get_vertex_playlist(mood, speed_category)
+                        st.markdown(ai_playlist)
 
         

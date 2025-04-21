@@ -8,7 +8,7 @@ import streamlit as st
 
 # Initialize Vertex AI
 vertexai.init(project="genial-venture-454302-f9", location="us-central1")
-model = GenerativeModel("gemini-2.0-flash")
+model = GenerativeModel("gemini-1.5-flash-002")
 
 # Set up Spotify client
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="9ac50b241ba74c3e9abb14cdf33c3efa", client_secret="24eefa94bebe42fcbd45d8e0d7aa181c"))
