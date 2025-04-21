@@ -207,7 +207,7 @@ def display_genai_advice(timestamp, advice, image):
         'image' : image
     }
     html_file_name = "display_advice"
-    create_component(data, html_file_name, 600)
+    create_component(data, html_file_name, 900)
 
 def display_post(username, user_image, timestamp, content, post_image):
     data = {

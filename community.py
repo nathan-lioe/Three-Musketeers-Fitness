@@ -5,8 +5,9 @@ from data_fetcher import (
     get_user_posts,
     get_friends_post,
     insert_post,
+    get_genai_advice
 )
-from modules import display_post
+from modules import display_post,display_genai_advice
 from datetime import datetime
 
 def show_posts(uID):
@@ -69,50 +70,7 @@ def show_posts(uID):
         unsafe_allow_html=True,
     )
 
-    with st.container(border=True):
-        st.markdown('<div class="post-creation-header">Share Your Thoughts!</div>', unsafe_allow_html=True)
-
-        # Session state for user input
-        if "post_content" not in st.session_state:
-            st.session_state.post_content = ""
-        if "post_image_url" not in st.session_state:
-            st.session_state.post_image_url = ""
-
-        post_content = st.text_area(
-            "What's on your mind?",
-            key="post_content",
-            value=st.session_state.post_content,
-            height=100,
-            label_visibility="collapsed",
-            placeholder="Write your post here...",
-        )
-        post_image_url = st.text_input(
-            "Image URL (optional)",
-            key="post_image_url",
-            value=st.session_state.post_image_url,
-            label_visibility="collapsed",
-            placeholder="Enter image URL here...",
-        )
-
-        if st.button("Post", key="post_button"):
-            if post_content:
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                post_id = f"{uID}_{int(datetime.timestamp(datetime.now()))}"
-
-                # Make sure argument order matches insert_post definition
-                success = insert_post(post_id, uID, timestamp, post_content, post_image_url)
-
-                if success is True:
-                    st.success("Post created successfully!")
-                    st.session_state.clear_post = True
-                    st.rerun()
-                elif isinstance(success, str):
-                    st.error(f"Error creating post: {success}")
-                else:
-                    st.error("Failed to create post. Please try again.")
-            else:
-                st.warning("Please enter some text for your post.")
-
+    
     # --- Display Posts Section ---
     st.subheader("Recent Posts")
     for x in posts:
@@ -125,3 +83,56 @@ def show_posts(uID):
         post_image = x.get("ImageUrl", "")
 
         display_post(username, user_image, timestamp, content, post_image)
+
+def show_page(uID):
+    col1, col2 = st.columns([6, 4])
+    with col1:
+        show_posts(uID)
+    with col2:
+        with st.container(border=True):
+                st.markdown('<div class="post-creation-header">Share Your Thoughts!</div>', unsafe_allow_html=True)
+
+                # Session state for user input
+                if "post_content" not in st.session_state:
+                    st.session_state.post_content = ""
+                if "post_image_url" not in st.session_state:
+                    st.session_state.post_image_url = ""
+
+                post_content = st.text_area(
+                    "What's on your mind?",
+                    key="post_content",
+                    value=st.session_state.post_content,
+                    height=100,
+                    label_visibility="collapsed",
+                    placeholder="Write your post here...",
+                )
+                post_image_url = st.text_input(
+                    "Image URL (optional)",
+                    key="post_image_url",
+                    value=st.session_state.post_image_url,
+                    label_visibility="collapsed",
+                    placeholder="Enter image URL here...",
+                )
+
+                if st.button("Post", key="post_button"):
+                    if post_content:
+                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        post_id = f"{uID}_{int(datetime.timestamp(datetime.now()))}"
+
+                        # Make sure argument order matches insert_post definition
+                        success = insert_post(post_id, uID, timestamp, post_content, post_image_url)
+
+                        if success is True:
+                            st.success("Post created successfully!")
+                            st.session_state.clear_post = True
+                            st.rerun()
+                        elif isinstance(success, str):
+                            st.error(f"Error creating post: {success}")
+                        else:
+                            st.error("Failed to create post. Please try again.")
+                    else:
+                        st.warning("Please enter some text for your post.")
+
+        #GenAi advice
+        advice = get_genai_advice(uID)
+        display_genai_advice(advice.get("timestamp", ""), advice.get("advice", ""), advice.get("image_url", ""))

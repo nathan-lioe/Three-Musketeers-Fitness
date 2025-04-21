@@ -7,6 +7,7 @@ from datetime import datetime
 import hashlib
 import numpy as np
 
+
 PROJECT_ID = os.getenv("PROJECT_ID", "genial-venture-454302-f9")
 DATASET_ID = "Three_Musketeers_Data"
 client = bigquery.Client(project=PROJECT_ID)
@@ -142,6 +143,22 @@ def get_user_profile(user_id):
         'profile_image': user_data[0].get('ImageUrl', ''),
         'friends': friends_list
     }
+
+def get_user_friends(user_id):
+    table_name = get_table_name("Users")
+    user_data = run_query(f"SELECT * FROM `{table_name}` WHERE UserId = '{user_id}'")
+    if not user_data:
+        return None
+    friends_table = get_table_name("Friends")
+    friends_data = run_query(f"SELECT UserId2 FROM `{friends_table}` WHERE UserId1 = '{user_id}'")
+    friends_list = [friend['UserId2'] for friend in friends_data]
+    friends_name = []
+    for person in friends_list:
+        table_name = get_table_name("Users")
+        user_data = run_query(f"SELECT Name FROM `{table_name}` WHERE UserId = '{person}'")
+        friends_name.append(user_data[0].get('Name', ''))
+
+    return friends_name
 
 def get_user_posts(user_id):
     table_name = get_table_name("Posts")

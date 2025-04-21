@@ -1,7 +1,7 @@
 import streamlit as st
 from modules import display_post, display_genai_advice, display_activity_summary, display_recent_workouts
-from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts,  get_genai_advice, authenticate_user, register_user, get_challenges, get_challenge_details
-from community import show_posts
+from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts,  get_genai_advice, authenticate_user, register_user, get_challenges, get_challenge_details, get_user_friends
+from community import show_page, show_posts
 from activity import display
 from challenge import render_challenge_details
 from leader import leader_components
@@ -136,12 +136,13 @@ with tab1:
     # Community Tab
     with tab2:
         st.header("Community Activity")
-        col1, col2 = st.columns([6, 4])
-        with col1:
-            show_posts(userId)
-        with col2:
-            advice = get_genai_advice(userId)
-            display_genai_advice(advice.get("timestamp", ""), advice.get("advice", ""), advice.get("image_url", ""))
+        show_page(userId)
+        # col1, col2 = st.columns([6, 4])
+        # with col1:
+        #     show_posts(userId)
+        # with col2:
+        #     advice = get_genai_advice(userId)
+        #     display_genai_advice(advice.get("timestamp", ""), advice.get("advice", ""), advice.get("image_url", ""))
 
 
         # Challenges Tab
@@ -279,6 +280,8 @@ with tab1:
 
             with col1:
                 st.image(user_profile["Profile_Image"], width=400)
+                friends = get_user_friends(userId)
+                st.text(f"Your friends: {friends}")
 
             with col2:
                 st.markdown("### Personal Information")
