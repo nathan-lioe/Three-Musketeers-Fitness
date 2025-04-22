@@ -197,6 +197,22 @@ def get_challenge_details(challenge_id):
     table_name = get_table_name("ChallengeSteps")
     return run_query(f"SELECT * FROM `{table_name}` WHERE challenge_id = {challenge_id} ORDER BY step_number ASC")
 
+@st.cache_data(ttl=300)
 def get_all_users():
     table_name = get_table_name("Users")
     return run_query(f"SELECT UserId, Name, Username, ImageUrl FROM `{table_name}` WHERE LENGTH(UserId) <= 6")
+
+
+@st.cache_data(ttl=300)
+def get_all_user_workouts(user_ids):
+    formatted_ids = ", ".join(f"'{uid}'" for uid in user_ids)
+    table_name = get_table_name("Workouts")
+    query = f"""
+    SELECT UserId,
+           SUM(TotalSteps) AS Steps,
+           SUM(CaloriesBurned) AS Calories
+    FROM `{table_name}`
+    WHERE UserId IN ({formatted_ids})
+    GROUP BY UserId
+    """
+    return run_query(query)

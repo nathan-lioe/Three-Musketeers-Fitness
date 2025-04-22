@@ -1,27 +1,34 @@
 import streamlit as st
 import pandas as pd
-from data_fetcher import get_all_users, get_user_workouts
+from data_fetcher import get_all_users, get_user_workouts, get_all_user_workouts
 from modules import display_leaderboard
 import altair as alt
 
 def process_data():
     user_info = []
     users = get_all_users()
+    user_ids = [x.get("UserId") for x in users]
+
+    # Batch query for all workout totals
+    workout_data = get_all_user_workouts(user_ids)
+
+    workouts_by_user = {
+        row["UserId"]: {
+            "Steps": row.get("Steps", 0),
+            "Calories": row.get("Calories", 0)
+        }
+        for row in workout_data
+    }
+
+    # Merge user info + computed score
     for x in users:
-        uid      = x.get("UserId")
+        uid = x.get("UserId")
         username = x.get("Username")
-        image    = x.get("ImageUrl")
+        image = x.get("ImageUrl")
 
-        workouts = get_user_workouts(uid)
-        if workouts and len(workouts) > 0:
-            first    = workouts[0]
-            steps    = first.get("TotalSteps", 0) or 0
-            calories = first.get("CaloriesBurned", 0) or 0
-        else:
-            # no data → default to zeros
-            steps    = 0
-            calories = 0
-
+        stats = workouts_by_user.get(uid, {"Steps": 0, "Calories": 0})
+        steps = stats["Steps"]
+        calories = stats["Calories"]
         combined = (0.4 * steps) + (0.6 * calories)
         user_info.append([uid, username, image, steps, calories, combined])
 
@@ -43,7 +50,7 @@ def plot_steps_comparison():
         data,
         columns=["UserId", "Username", "ImageUrl", "Steps", "Calories", "Combined"]
     )
-    # Compare calories (or rename if you want steps)
+    # Compare calories 
     calories_data = df.set_index("Username")["Calories"]
 
     st.subheader("Calories Burned Progress")
