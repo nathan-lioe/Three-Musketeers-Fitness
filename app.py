@@ -1,6 +1,6 @@
 import streamlit as st
 from modules import display_post, display_genai_advice, display_activity_summary, display_recent_workouts
-from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts,  get_genai_advice, authenticate_user, register_user, get_challenges, get_challenge_details, get_user_friends
+from data_fetcher import get_user_profile, get_user_sensor_data, get_user_workouts,  get_genai_advice, authenticate_user, register_user, get_challenges, get_challenge_details, get_user_friends, get_user_posts
 from community import show_page, show_posts
 from activity import display
 from challenge import render_challenge_details
@@ -286,6 +286,22 @@ with tab1:
                 st.image(user_profile["Profile_Image"], width=400)
                 friends = get_user_friends(userId)
                 st.text(f"Your friends: {friends}")
+                st.text(f"My Posts")
+                post = get_user_posts(userId)
+                for x in post:
+                    author_id = x.get("AuthorId", "")
+                    author_profile = get_user_profile(author_id)
+                    username = author_profile.get("username", "Unknown")
+                    user_image = author_profile.get("profile_image", "")
+                    timestamp = x.get("Timestamp", "")
+                    content = x.get("Content", "")
+                    post_image = x.get("ImageUrl", "")
+
+                    display_post(username, user_image, timestamp, content, post_image)
+
+                
+
+
 
             with col2:
                 st.markdown("### Personal Information")
