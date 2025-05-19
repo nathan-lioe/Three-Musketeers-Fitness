@@ -1,6 +1,4 @@
-## Three-Musketeers
-
-## Our Team
+## Three-Musketeers Team
 
 Ariel Antunez <br>
 Nathan Lioe-A-Tjam <br>
